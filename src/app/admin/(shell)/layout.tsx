@@ -2,6 +2,9 @@ import Link from "next/link";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { AdminLogoutButton } from "@/components/admin/admin-logout-button";
 
+/** Always read live TiDB data — never cache dashboard at build time. */
+export const dynamic = "force-dynamic";
+
 const links = [
   { href: "/admin", label: "Dashboard" },
   { href: "/admin/cars", label: "Cars" },
