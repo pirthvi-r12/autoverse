@@ -1,3 +1,4 @@
+import { carMatchesBrand } from "@/lib/filter-cars";
 import type { Car, CarFilters, CarImage } from "@/types";
 import type { RowDataPacket } from "mysql2";
 import { getPool } from "./pool";
@@ -37,9 +38,7 @@ function filterCars(cars: Car[], filters?: CarFilters): Car[] {
     list = list.filter((c) => c.status === filters.status);
   }
   if (filters.brand) {
-    list = list.filter(
-      (c) => c.brand.toLowerCase() === filters.brand!.toLowerCase()
-    );
+    list = list.filter((c) => carMatchesBrand(c, filters.brand!));
   }
   if (filters.model) {
     list = list.filter((c) =>

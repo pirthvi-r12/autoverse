@@ -5,96 +5,52 @@ import {
   dbGetCarBySlug,
   dbGetCars,
   dbGetFeaturedCars,
-  dbGetPublicCars,
-  dbGetSoldShowcaseCars,
   dbSetCarStatus,
   dbUpsertCar,
 } from "@/lib/db/cars-repo";
+import { filterCars } from "@/lib/filter-cars";
+import {
+  getSoldDeliveryCarBySlug,
+  getSoldDeliveryInventory,
+} from "@/lib/sold-delivery-inventory";
 import { MOCK_CARS } from "@/lib/mock-data";
 import type { Car, CarFilters } from "@/types";
 
-function filterMock(cars: Car[], filters?: CarFilters): Car[] {
-  let list = [...cars];
-  if (!filters) return list;
-
-  if (filters.status && filters.status !== "all") {
-    list = list.filter((c) => c.status === filters.status);
-  }
-  if (filters.brand) {
-    list = list.filter(
-      (c) => c.brand.toLowerCase() === filters.brand!.toLowerCase()
-    );
-  }
-  if (filters.model) {
-    list = list.filter((c) =>
-      c.model.toLowerCase().includes(filters.model!.toLowerCase())
-    );
-  }
-  if (filters.yearMin) list = list.filter((c) => c.year >= filters.yearMin!);
-  if (filters.yearMax) list = list.filter((c) => c.year <= filters.yearMax!);
-  if (filters.priceMin) list = list.filter((c) => c.price >= filters.priceMin!);
-  if (filters.priceMax) list = list.filter((c) => c.price <= filters.priceMax!);
-  if (filters.fuelType) {
-    list = list.filter(
-      (c) => c.fuel_type.toLowerCase() === filters.fuelType!.toLowerCase()
-    );
-  }
-  if (filters.transmission) {
-    list = list.filter(
-      (c) =>
-        c.transmission.toLowerCase() === filters.transmission!.toLowerCase()
-    );
-  }
-  if (filters.bodyType) {
-    list = list.filter(
-      (c) => c.body_type.toLowerCase() === filters.bodyType!.toLowerCase()
-    );
-  }
-  if (filters.search) {
-    const q = filters.search.toLowerCase();
-    list = list.filter(
-      (c) =>
-        c.name.toLowerCase().includes(q) ||
-        c.brand.toLowerCase().includes(q) ||
-        c.model.toLowerCase().includes(q)
-    );
-  }
-
-  switch (filters.sort) {
-    case "price_asc":
-      list.sort((a, b) => a.price - b.price);
-      break;
-    case "price_desc":
-      list.sort((a, b) => b.price - a.price);
-      break;
-    case "year_desc":
-      list.sort((a, b) => b.year - a.year);
-      break;
-    case "newest":
-    default:
-      list.sort(
-        (a, b) =>
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      );
-  }
-
-  return list;
+async function getActiveInventory(): Promise<Car[]> {
+  const all = isDatabaseConfigured() ? await dbGetCars() : MOCK_CARS;
+  return all.filter((c) => c.status !== "sold");
 }
 
-/** Public showroom listing — hides sold unless the visitor picks “Sold”. */
+/** Public showroom: live inventory + sold handovers from Sold & Delivered section. */
 export async function getPublicCars(filters?: CarFilters): Promise<Car[]> {
-  if (isDatabaseConfigured()) {
-    return dbGetPublicCars(filters);
-  }
   const status = filters?.status ?? "available";
-  return filterMock(MOCK_CARS, { ...filters, status });
+  const soldShowcase = getSoldDeliveryInventory();
+  const soldFiltered = filterCars(soldShowcase, { ...filters, status: "sold" });
+
+  if (status === "sold") {
+    return soldFiltered;
+  }
+
+  const inventory = await getActiveInventory();
+
+  if (status === "available") {
+    return filterCars(inventory, { ...filters, status: "available" });
+  }
+
+  if (status === "reserved") {
+    return filterCars(inventory, { ...filters, status: "reserved" });
+  }
+
+  const active = filterCars(inventory, { ...filters, status: "all" });
+  const combined = [...active, ...soldFiltered];
+  return filterCars(combined, { ...filters, status: "all" });
 }
 
 export async function getCars(filters?: CarFilters): Promise<Car[]> {
   if (isDatabaseConfigured()) {
     return dbGetCars(filters);
   }
-  return filterMock(MOCK_CARS, filters);
+  return filterCars(MOCK_CARS, filters);
 }
 
 export async function getFeaturedCars(limit = 6): Promise<Car[]> {
@@ -108,13 +64,13 @@ export async function getFeaturedCars(limit = 6): Promise<Car[]> {
 }
 
 export async function getSoldShowcaseCars(limit = 8): Promise<Car[]> {
-  if (isDatabaseConfigured()) {
-    return dbGetSoldShowcaseCars(limit);
-  }
-  return MOCK_CARS.filter((c) => c.status === "sold").slice(0, limit);
+  return getSoldDeliveryInventory().slice(0, limit);
 }
 
 export async function getCarBySlug(slug: string): Promise<Car | null> {
+  const sold = getSoldDeliveryCarBySlug(slug);
+  if (sold) return sold;
+
   if (isDatabaseConfigured()) {
     return dbGetCarBySlug(slug);
   }
@@ -122,6 +78,9 @@ export async function getCarBySlug(slug: string): Promise<Car | null> {
 }
 
 export async function getCarById(id: string): Promise<Car | null> {
+  if (id.startsWith("sold-")) {
+    return getSoldDeliveryCarBySlug(`sold-delivery-${id.slice("sold-".length)}`);
+  }
   if (isDatabaseConfigured()) {
     return dbGetCarById(id);
   }
@@ -129,6 +88,13 @@ export async function getCarById(id: string): Promise<Car | null> {
 }
 
 export async function getRelatedCars(car: Car, limit = 4): Promise<Car[]> {
+  if (car.status === "sold") {
+    const related = filterCars(getSoldDeliveryInventory(), {
+      brand: car.brand,
+      status: "sold",
+    });
+    return related.filter((c) => c.id !== car.id).slice(0, limit);
+  }
   const all = await getCars({
     brand: car.brand,
     status: "available",
@@ -138,10 +104,11 @@ export async function getRelatedCars(car: Car, limit = 4): Promise<Car[]> {
 
 export async function getCarStats() {
   const cars = await getCars();
+  const soldDeliveries = getSoldDeliveryInventory().length;
   return {
-    total: cars.length,
+    total: cars.filter((c) => c.status !== "sold").length + soldDeliveries,
     available: cars.filter((c) => c.status === "available").length,
-    sold: cars.filter((c) => c.status === "sold").length,
+    sold: soldDeliveries,
     reserved: cars.filter((c) => c.status === "reserved").length,
   };
 }

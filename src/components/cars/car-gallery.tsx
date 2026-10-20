@@ -22,8 +22,8 @@ export function CarGallery({
           {status === "reserved"
             ? "No reserved cars in stock right now — try Available or All status."
             : status === "available" && brand
-              ? `No available ${brand} cars — try All status or Sold to see past inventory.`
-              : "Try clearing filters or choosing All status / another brand."}
+              ? `No available ${brand} in stock — check Sold for delivered ${brand} cars.`
+              : "Try clearing filters or choosing another status / brand."}
         </p>
         <div className="mt-6 flex flex-col items-center gap-2 sm:flex-row sm:justify-center">
           <Link
@@ -34,10 +34,18 @@ export function CarGallery({
           </Link>
           {brand && status === "available" && (
             <Link
-              href={`/cars?brand=${encodeURIComponent(brand)}&status=all`}
+              href={`/cars?brand=${encodeURIComponent(brand)}&status=sold`}
               className="btn-touch rounded-full bg-accent px-5 text-black"
             >
-              Show all {brand}
+              View sold {brand}
+            </Link>
+          )}
+          {brand && status === "sold" && (
+            <Link
+              href={`/cars?brand=${encodeURIComponent(brand)}&status=all`}
+              className="btn-touch rounded-full border border-white/20 px-5 text-white"
+            >
+              All {brand} (live + sold)
             </Link>
           )}
         </div>

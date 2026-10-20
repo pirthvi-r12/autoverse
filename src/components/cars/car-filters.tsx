@@ -48,7 +48,7 @@ export function CarFilters() {
     router.push("/cars", { scroll: false });
   }
 
-  const statusValue = params.get("status") ?? parsed.status ?? "available";
+  const statusValue = parsed.status ?? "available";
 
   return (
     <div className="glass-panel space-y-3 rounded-2xl p-4">
@@ -120,13 +120,7 @@ export function CarFilters() {
             <select
               className="field col-span-2"
               value={parsed.brand ?? ""}
-              onChange={(e) => {
-                const brand = e.target.value;
-                apply({
-                  brand: brand || undefined,
-                  status: brand && !params.get("status") ? "all" : parsed.status,
-                });
-              }}
+              onChange={(e) => patch("brand", e.target.value)}
               aria-label="Brand"
             >
               <option value="">All brands</option>
@@ -155,13 +149,7 @@ export function CarFilters() {
         <select
           className="field md:col-span-2 lg:col-span-1"
           value={parsed.brand ?? ""}
-          onChange={(e) => {
-            const brand = e.target.value;
-            apply({
-              brand: brand || undefined,
-              status: brand && !params.get("status") ? "all" : parsed.status,
-            });
-          }}
+          onChange={(e) => patch("brand", e.target.value)}
           aria-label="Brand"
         >
           <option value="">All brands</option>

@@ -106,7 +106,9 @@ export function CarDetailClient({
           </div>
 
           <p className="mt-3 text-2xl font-black text-accent sm:text-3xl">
-            {formatPrice(car.price)}
+            {car.status === "sold" && car.price <= 0
+              ? "Sold out"
+              : formatPrice(car.price)}
           </p>
 
           <dl className="mt-5 grid grid-cols-2 gap-2.5 sm:mt-6 sm:gap-3">
@@ -147,19 +149,43 @@ export function CarDetailClient({
           )}
 
           <div className="mt-6 grid grid-cols-2 gap-2.5 sm:flex sm:flex-wrap sm:gap-3">
-            <a
-              href={whatsappUrl(carInquiryMessage(car))}
-              className="car-detail-cta col-span-2 bg-[#25D366] text-white sm:col-span-1"
-            >
-              WhatsApp Us
-            </a>
-            <a
-              href={`tel:${SITE.phone}`}
-              className="car-detail-cta border border-white/20 text-white"
-            >
-              <Phone size={16} aria-hidden />
-              Call Now
-            </a>
+            {car.status !== "sold" && (
+              <>
+                <a
+                  href={whatsappUrl(carInquiryMessage(car))}
+                  className="car-detail-cta col-span-2 bg-[#25D366] text-white sm:col-span-1"
+                >
+                  WhatsApp Us
+                </a>
+                <a
+                  href={`tel:${SITE.phone}`}
+                  className="car-detail-cta border border-white/20 text-white"
+                >
+                  <Phone size={16} aria-hidden />
+                  Call Now
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setInspectOpen(true)}
+                  className="car-detail-cta col-span-2 bg-accent text-black sm:col-span-1"
+                >
+                  <span className="sm:hidden">Book inspection</span>
+                  <span className="hidden sm:inline">
+                    Book Inspection for this Car
+                  </span>
+                </button>
+              </>
+            )}
+            {car.status === "sold" && (
+              <a
+                href={whatsappUrl(
+                  `Hi ${SITE.name}, I'm interested in a car like the ${car.name}.`
+                )}
+                className="car-detail-cta col-span-2 bg-[#25D366] text-white sm:col-span-1"
+              >
+                Ask about similar cars
+              </a>
+            )}
             <button
               type="button"
               onClick={share}
@@ -167,14 +193,6 @@ export function CarDetailClient({
             >
               <Share2 size={16} aria-hidden />
               Share
-            </button>
-            <button
-              type="button"
-              onClick={() => setInspectOpen(true)}
-              className="car-detail-cta col-span-2 bg-accent text-black sm:col-span-1"
-            >
-              <span className="sm:hidden">Book inspection</span>
-              <span className="hidden sm:inline">Book Inspection for this Car</span>
             </button>
           </div>
         </div>

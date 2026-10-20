@@ -18,27 +18,16 @@ export function parseCarFiltersFromSearchParams(
     return one(sp[key]);
   };
 
-  const brand = get("brand");
-  const search = get("search");
-  const fuelType = get("fuelType");
-  const transmission = get("transmission");
-  const bodyType = get("bodyType");
-
-  const hasScopedFilter = Boolean(
-    brand || search || fuelType || transmission || bodyType
-  );
-
   const statusRaw = get("status");
   const status =
-    (statusRaw as CarFilters["status"] | undefined) ??
-    (hasScopedFilter ? "all" : "available");
+    (statusRaw as CarFilters["status"] | undefined) ?? "available";
 
   return {
-    brand,
-    search,
-    fuelType,
-    transmission,
-    bodyType,
+    brand: get("brand")?.trim() || undefined,
+    search: get("search")?.trim() || undefined,
+    fuelType: get("fuelType")?.trim() || undefined,
+    transmission: get("transmission")?.trim() || undefined,
+    bodyType: get("bodyType")?.trim() || undefined,
     sort: (get("sort") as CarFilters["sort"]) ?? "newest",
     status,
     yearMin: get("yearMin") ? Number(get("yearMin")) : undefined,
@@ -50,15 +39,28 @@ export function parseCarFiltersFromSearchParams(
 
 export function carFiltersToSearchParams(filters: Partial<CarFilters>): string {
   const next = new URLSearchParams();
+  const status = filters.status ?? "available";
+
   if (filters.search) next.set("search", filters.search);
   if (filters.brand) next.set("brand", filters.brand);
   if (filters.fuelType) next.set("fuelType", filters.fuelType);
   if (filters.transmission) next.set("transmission", filters.transmission);
   if (filters.bodyType) next.set("bodyType", filters.bodyType);
   if (filters.sort && filters.sort !== "newest") next.set("sort", filters.sort);
-  if (filters.status && filters.status !== "available") {
-    next.set("status", filters.status);
+
+  const hasFilters =
+    filters.brand ||
+    filters.search ||
+    filters.fuelType ||
+    filters.transmission ||
+    filters.bodyType ||
+    status !== "available" ||
+    (filters.sort && filters.sort !== "newest");
+
+  if (hasFilters) {
+    next.set("status", status);
   }
+
   if (filters.yearMin != null) next.set("yearMin", String(filters.yearMin));
   if (filters.yearMax != null) next.set("yearMax", String(filters.yearMax));
   if (filters.priceMin != null) next.set("priceMin", String(filters.priceMin));

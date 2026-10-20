@@ -69,7 +69,11 @@ export function CarCard({ car }: { car: Car }) {
         <p className="text-sm text-white/55">
           {car.year} · {formatKm(car.mileage)} · {car.transmission}
         </p>
-        <p className="text-xl font-bold text-accent">{formatPrice(car.price)}</p>
+        <p className="text-xl font-bold text-accent">
+          {car.status === "sold" && car.price <= 0
+            ? "Sold out"
+            : formatPrice(car.price)}
+        </p>
         <Link
           href={`/cars/${car.slug}`}
           className="glass-cta btn-touch inline-flex w-full items-center justify-center rounded-xl text-white transition hover:border-accent/50 hover:bg-accent/20 hover:text-accent"
