@@ -4,7 +4,7 @@ import { SITE } from "@/lib/constants";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const cars = await getCars({ status: "all" });
-  const staticRoutes = ["", "/cars", "/about", "/contact"].map((path) => ({
+  const staticRoutes = ["", "/cars", "/ppf", "/ceramic-coating", "/about", "/contact"].map((path) => ({
     url: `${SITE.url}${path}`,
     lastModified: new Date(),
     changeFrequency: "weekly" as const,

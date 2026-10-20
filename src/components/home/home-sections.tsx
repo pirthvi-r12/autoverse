@@ -5,6 +5,8 @@ import { CarCard } from "@/components/cars/car-card";
 import { BRANDS, INSPECTION_PACKAGES, SITE } from "@/lib/constants";
 import { AnimatedCounter } from "./animated-counter";
 import { InspectionSection } from "@/components/inspection/inspection-section";
+import { PpfSection } from "@/components/ppf/ppf-section";
+import { CeramicSection } from "@/components/ceramic/ceramic-section";
 import { SoldShowcaseSection } from "./sold-showcase-section";
 import { TestimonialsSlider } from "./testimonials-slider";
 import { FaqSection } from "./faq-section";
@@ -82,6 +84,10 @@ export async function HomeSections() {
       </section>
 
       <InspectionSection packages={INSPECTION_PACKAGES} />
+
+      <PpfSection variant="home" />
+
+      <CeramicSection variant="home" />
 
       <section className="section-block">
         <h2 className="section-title text-center text-2xl sm:text-3xl">
