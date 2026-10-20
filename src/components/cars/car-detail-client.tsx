@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { CarPhoto } from "@/components/cars/car-photo";
+import { getCarCoverUrl } from "@/lib/car-image";
 import { Share2, Phone } from "lucide-react";
 import type { Car } from "@/types";
 import { formatPrice, formatKm } from "@/lib/format";
@@ -22,7 +23,7 @@ export function CarDetailClient({
   const [active, setActive] = useState(0);
   const [lightbox, setLightbox] = useState(false);
   const [inspectOpen, setInspectOpen] = useState(false);
-  const cover = images[active]?.url ?? images[0]?.url;
+  const cover = images[active]?.url ?? getCarCoverUrl(images);
 
   async function share() {
     const url = `${SITE.url}/cars/${car.slug}`;

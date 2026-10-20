@@ -7,10 +7,10 @@ import type { Car } from "@/types";
 import { formatPrice, formatKm } from "@/lib/format";
 import { StatusBadge } from "@/components/ui/badge";
 import { cn } from "@/lib/cn";
+import { getCarCoverUrl } from "@/lib/car-image";
 
 export function CarCard({ car }: { car: Car }) {
-  const cover =
-    car.images?.find((i) => i.is_cover)?.url ?? car.images?.[0]?.url ?? "";
+  const cover = getCarCoverUrl(car.images);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [8, -8]), {
@@ -39,26 +39,23 @@ export function CarCard({ car }: { car: Car }) {
       onMouseMove={onMove}
       onMouseLeave={onLeave}
       className={cn(
-        "glass-card group relative rounded-2xl max-md:!transform-none",
-        car.status === "sold" && "opacity-90"
+        "glass-card group relative overflow-hidden rounded-2xl max-md:!transform-none",
+        car.status === "sold" && "opacity-95"
       )}
     >
-      {car.status === "sold" && (
-        <div className="pointer-events-none absolute left-0 top-4 z-10 -rotate-45 bg-red-600 px-16 py-1 text-xs font-bold uppercase tracking-widest text-white shadow-lg">
-          Sold
+      <div className="relative overflow-hidden rounded-t-2xl">
+        <div className="transition duration-500 group-hover:scale-[1.02]">
+          <CarPhoto src={cover} alt={car.name} variant="card" />
         </div>
-      )}
-      <div className="relative overflow-hidden">
-        {cover ? (
-          <div className="transition duration-500 group-hover:scale-[1.02]">
-            <CarPhoto src={cover} alt={car.name} variant="card" />
-          </div>
-        ) : (
-          <div className="flex aspect-[810/1013] items-center justify-center bg-white/5 text-white/30">
-            No image
-          </div>
+        {car.status === "sold" && (
+          <div className="pointer-events-none absolute inset-0 bg-black/10" aria-hidden />
         )}
-        <div className="absolute right-3 top-3">
+        {car.status === "sold" && (
+          <span className="absolute left-3 top-3 z-10 rounded-full bg-red-600 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-md sm:text-xs">
+            Sold
+          </span>
+        )}
+        <div className="absolute right-3 top-3 z-10">
           <StatusBadge status={car.status} />
         </div>
       </div>

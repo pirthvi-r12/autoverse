@@ -198,7 +198,9 @@ INSERT INTO car_images (id, car_id, url, alt_text, sort_order, is_cover) VALUES
   (UUID(), 'a1b2c3d4-0001-4000-8000-000000000024', '/images/toyota-premio/01.jpg', 'Toyota Premio', 0, 1),
   (UUID(), 'a1b2c3d4-0001-4000-8000-000000000025', '/images/nissan-note-e-power/01.jpg', 'Nissan Note e-Power', 0, 1),
   (UUID(), 'a1b2c3d4-0001-4000-8000-000000000026', '/images/toyota-corolla-grande/01.jpg', 'Toyota Corolla Grande', 0, 1),
-  (UUID(), 'a1b2c3d4-0001-4000-8000-000000000027', '/images/lexus-rx450h/01.jpg', 'Lexus RX450h', 0, 1);
+  (UUID(), 'a1b2c3d4-0001-4000-8000-000000000027', '/images/lexus-rx450h/01.jpg', 'Lexus RX450h', 0, 1),
+  (UUID(), 'a1b2c3d4-0001-4000-8000-000000000003', 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=810&q=80&auto=format', 'Suzuki Alto VXL — cover', 0, 1),
+  (UUID(), 'a1b2c3d4-0001-4000-8000-000000000008', 'https://images.unsplash.com/photo-1603584173870-7f23fdae9283?w=810&q=80&auto=format', 'Audi A4 Premium — cover', 0, 1);
 
 UPDATE cars SET customer_feedback = 'Perfect first car for the city — AutoVerse handled everything clearly.'
 WHERE id = 'a1b2c3d4-0001-4000-8000-000000000003';
