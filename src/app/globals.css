@@ -1,0 +1,315 @@
+@import "tailwindcss";
+
+@theme {
+  --color-accent: #60dbfb;
+  --color-brand: #1383a1;
+  --color-brand-dark: #0c5f75;
+  --color-brand-deep: #083844;
+  --color-brand-ink: #062028;
+  --color-brand-glow: #60dbfb;
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --glass-blur: 28px;
+  --glass-saturate: 165%;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply min-h-screen text-white antialiased;
+  background-color: #020a0f;
+  background-image:
+    radial-gradient(ellipse 120% 80% at 50% -20%, rgba(19, 131, 161, 0.35), transparent 55%),
+    radial-gradient(circle at 100% 50%, rgba(96, 219, 251, 0.08), transparent 40%),
+    linear-gradient(180deg, #020a0f 0%, #041820 50%, #020a0f 100%);
+}
+
+/* —— Atmospheric canvas (marketing) —— */
+.site-canvas {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.site-canvas__mesh {
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(circle at 15% 25%, rgba(96, 219, 251, 0.18), transparent 42%),
+    radial-gradient(circle at 85% 15%, rgba(19, 131, 161, 0.22), transparent 38%),
+    radial-gradient(circle at 55% 85%, rgba(12, 95, 117, 0.2), transparent 45%);
+  filter: blur(40px);
+  opacity: 0.85;
+}
+
+.site-canvas__orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.55;
+  animation: site-orb-drift 22s ease-in-out infinite;
+}
+
+.site-canvas__orb--1 {
+  top: 8%;
+  left: -5%;
+  width: min(520px, 55vw);
+  height: min(520px, 55vw);
+  background: radial-gradient(circle, rgba(96, 219, 251, 0.35), transparent 70%);
+  animation-duration: 26s;
+}
+
+.site-canvas__orb--2 {
+  top: 42%;
+  right: -8%;
+  width: min(480px, 50vw);
+  height: min(480px, 50vw);
+  background: radial-gradient(circle, rgba(19, 131, 161, 0.4), transparent 68%);
+  animation-duration: 32s;
+  animation-delay: -8s;
+}
+
+.site-canvas__orb--3 {
+  bottom: -5%;
+  left: 30%;
+  width: min(640px, 70vw);
+  height: min(400px, 45vw);
+  background: radial-gradient(circle, rgba(8, 56, 68, 0.55), transparent 72%);
+  animation-duration: 28s;
+  animation-delay: -14s;
+}
+
+.site-canvas__grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.04;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.9) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.9) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, black, transparent);
+}
+
+.site-canvas__noise {
+  position: absolute;
+  inset: 0;
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@keyframes site-orb-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(3%, 2%) scale(1.04);
+  }
+  66% {
+    transform: translate(-2%, 3%) scale(0.98);
+  }
+}
+
+/* —— Realistic glass surfaces —— */
+.glass,
+.glass-panel {
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.14) 0%,
+    rgba(255, 255, 255, 0.04) 38%,
+    rgba(96, 219, 251, 0.05) 100%
+  );
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05),
+    0 16px 48px rgba(0, 8, 16, 0.35);
+}
+
+.glass-panel::before,
+.glass-card::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    ellipse 90% 60% at 12% 0%,
+    rgba(255, 255, 255, 0.22),
+    transparent 55%
+  );
+  opacity: 0.75;
+}
+
+.glass-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.02) 45%,
+    rgba(19, 131, 161, 0.08) 100%
+  );
+  backdrop-filter: blur(22px) saturate(170%);
+  -webkit-backdrop-filter: blur(22px) saturate(170%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 20px 40px rgba(0, 6, 12, 0.4);
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
+}
+
+.glass-card:hover {
+  border-color: rgba(96, 219, 251, 0.35);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    0 24px 56px rgba(0, 10, 20, 0.45),
+    0 0 0 1px rgba(96, 219, 251, 0.08);
+}
+
+.glass-nav {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.03) 100%
+  );
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.glass-nav-top {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.07) 0%,
+    rgba(255, 255, 255, 0.01) 100%
+  );
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.glass-nav-solid {
+  background: linear-gradient(
+    180deg,
+    rgba(6, 32, 40, 0.65) 0%,
+    rgba(6, 32, 40, 0.45) 100%
+  );
+}
+
+.glass-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(
+    0deg,
+    rgba(2, 10, 15, 0.75) 0%,
+    rgba(255, 255, 255, 0.04) 100%
+  );
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+}
+
+.glass-cta {
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(255, 255, 255, 0.04) 100%
+  );
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.glass-stat {
+  border: 1px solid rgba(96, 219, 251, 0.22);
+  background: linear-gradient(
+    145deg,
+    rgba(96, 219, 251, 0.12) 0%,
+    rgba(96, 219, 251, 0.03) 100%
+  );
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.field {
+  @apply w-full rounded-xl px-3 py-2.5 text-sm text-white outline-none transition placeholder:text-white/35;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.field:focus {
+  border-color: rgba(96, 219, 251, 0.55);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 0 3px rgba(96, 219, 251, 0.15);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-canvas__orb {
+    animation: none;
+  }
+}
+
+/* Hero circular car showcase */
+.hero-orbit-root {
+  --orbit-radius: clamp(128px, 36vw, 158px);
+  --thumb-size: clamp(44px, 11vw, 56px);
+}
+
+.hero-orbit-glow {
+  position: absolute;
+  inset: 5%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(96, 219, 251, 0.22),
+    transparent 65%
+  );
+  filter: blur(20px);
+  z-index: 0;
+}
+
+.hero-orbit-stage {
+  z-index: 1;
+  border-radius: 50% !important;
+}
+
+.hero-orbit-spinner {
+  animation: hero-orbit-spin 28s linear infinite;
+}
+
+@keyframes hero-orbit-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.hero-orbit-node {
+  width: 0;
+  height: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-orbit-spinner {
+    animation: none;
+  }
+}

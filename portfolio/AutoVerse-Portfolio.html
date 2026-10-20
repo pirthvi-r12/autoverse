@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AutoVerse — Complete Project Portfolio</title>
+    <style>
+      :root {
+        --brand: #1383a1;
+        --accent: #60dbfb;
+        --ink: #062028;
+        --deep: #041820;
+        --border: rgba(255, 255, 255, 0.12);
+        --text: rgba(255, 255, 255, 0.82);
+        --muted: rgba(255, 255, 255, 0.55);
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        font-family: "Segoe UI", system-ui, sans-serif;
+        color: var(--text);
+        background: #020a0f;
+        background-image: radial-gradient(circle at 0% 0%, rgba(19, 131, 161, 0.3), transparent 45%),
+          linear-gradient(180deg, #020a0f, var(--deep));
+        line-height: 1.55;
+      }
+      a { color: var(--accent); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .layout { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+      @media (max-width: 900px) {
+        .layout { grid-template-columns: 1fr; }
+        .sidebar { position: relative !important; height: auto !important; }
+      }
+      .sidebar {
+        position: sticky; top: 0; height: 100vh; overflow-y: auto;
+        padding: 1.25rem 1rem; border-right: 1px solid var(--border);
+        background: rgba(6, 32, 40, 0.85); backdrop-filter: blur(16px);
+      }
+      .sidebar .brand { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+      .sidebar .brand img { width: 48px; height: 48px; border-radius: 50%; border: 2px solid rgba(96, 219, 251, 0.45); }
+      .sidebar h1 { margin: 0; font-size: 1.1rem; color: #fff; }
+      .sidebar .sub { font-size: 0.75rem; color: var(--muted); }
+      .nav-group { margin-bottom: 0.85rem; }
+      .nav-group-title { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 0.35rem; }
+      .nav-group a { display: block; padding: 0.3rem 0.5rem; border-radius: 0.4rem; font-size: 0.82rem; color: rgba(255,255,255,0.72); text-decoration: none; }
+      .nav-group a:hover { background: rgba(96, 219, 251, 0.12); color: var(--accent); text-decoration: none; }
+      main { padding: 1.5rem 1.75rem 3rem; max-width: 920px; }
+      .page-title { font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 800; color: #fff; margin: 0 0 0.25rem; }
+      .page-lead { color: var(--muted); margin: 0 0 1rem; max-width: 42rem; }
+      .urdu { direction: rtl; font-family: "Segoe UI", "Jameel Noori Nastaleeq", serif; color: rgba(255,255,255,0.65); font-size: 0.95rem; margin-bottom: 1.25rem; }
+      section.block { margin-bottom: 1.75rem; padding: 1.25rem 1.35rem; border: 1px solid var(--border); border-radius: 1rem;
+        background: linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)); }
+      section.block h2 { margin: 0 0 0.75rem; font-size: 1.15rem; color: var(--accent); }
+      section.block h3 { margin: 1rem 0 0.4rem; font-size: 0.95rem; color: #fff; }
+      .fn-list { list-style: none; padding: 0; margin: 0; }
+      .fn-list li { padding: 0.55rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 0.88rem; }
+      .fn-list li:last-child { border-bottom: none; }
+      .fn-name { font-weight: 700; color: #fff; font-family: ui-monospace, Consolas, monospace; font-size: 0.82rem; }
+      .fn-desc { color: var(--muted); margin-top: 0.2rem; font-size: 0.85rem; }
+      .tag { display: inline-block; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; padding: 0.12rem 0.45rem; border-radius: 999px; margin-right: 0.35rem; }
+      .tag-page { background: rgba(96,219,251,0.15); color: var(--accent); }
+      .tag-api { background: rgba(167,139,250,0.2); color: #c4b5fd; }
+      .tag-admin { background: rgba(251,191,36,0.15); color: #fcd34d; }
+      .tag-data { background: rgba(52,211,153,0.15); color: #6ee7b7; }
+      table.data { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+      table.data th, table.data td { text-align: left; padding: 0.5rem 0.4rem; border-bottom: 1px solid var(--border); }
+      table.data th { color: var(--accent); }
+      code { font-family: ui-monospace, Consolas, monospace; font-size: 0.85em; background: rgba(0,0,0,0.35); padding: 0.1rem 0.35rem; border-radius: 0.25rem; }
+      .demo-bar { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.25rem; }
+      .demo-bar a { padding: 0.45rem 0.9rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700; text-decoration: none; }
+      .btn-fill { background: var(--accent); color: var(--ink); }
+      .btn-outline { border: 1px solid var(--border); color: #fff; }
+      .grid-2 { display: grid; gap: 0.75rem; }
+      @media (min-width: 640px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
+      .mini-card { padding: 0.75rem; border-radius: 0.65rem; border: 1px solid var(--border); background: rgba(0,0,0,0.2); font-size: 0.85rem; }
+      .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 0.5rem; margin-top: 0.75rem; }
+      .gallery img { width: 100%; border-radius: 0.5rem; aspect-ratio: 4/5; object-fit: cover; border: 1px solid var(--border); }
+      pre.cmd { font-size: 0.78rem; padding: 0.75rem; border-radius: 0.5rem; background: rgba(0,0,0,0.35); overflow-x: auto; border: 1px solid var(--border); }
+      .section-divider { margin: 2.5rem 0 1rem; padding-top: 1rem; border-top: 2px solid rgba(96,219,251,0.25); font-size: 1.35rem; font-weight: 800; color: #fff; }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="brand">
+          <img src="../public/brand/autoverse-mark.jpg" alt="" />
+          <div><h1>AutoVerse</h1><div class="sub">Single-file portfolio</div></div>
+        </div>
+        <nav class="nav-group">
+          <div class="nav-group-title">Overview</div>
+          <a href="#overview">Summary</a>
+          <a href="#routes">All routes</a>
+          <a href="#inventory">Inventory</a>
+        </nav>
+        <nav class="nav-group">
+          <div class="nav-group-title">Public site</div>
+          <a href="#pub-home">Home</a>
+          <a href="#pub-cars">Gallery &amp; detail</a>
+          <a href="#pub-forms">Forms &amp; API</a>
+          <a href="#pub-ui">Layout &amp; SEO</a>
+        </nav>
+        <nav class="nav-group">
+          <div class="nav-group-title">Admin</div>
+          <a href="#adm-auth">Auth</a>
+          <a href="#adm-cars">Cars CRUD</a>
+          <a href="#adm-insp">Inspections</a>
+          <a href="#adm-more">Leads &amp; PDF</a>
+        </nav>
+        <nav class="nav-group">
+          <div class="nav-group-title">Technical</div>
+          <a href="#tech-api">API table</a>
+          <a href="#tech-data">Data functions</a>
+          <a href="#tech-sql">Database</a>
+          <a href="#tech-env">Env &amp; commands</a>
+        </nav>
+        <nav class="nav-group">
+          <div class="nav-group-title">Live</div>
+          <a href="http://localhost:3000" target="_blank">Open site</a>
+          <a href="http://localhost:3000/admin/login" target="_blank">Admin</a>
+        </nav>
+      </aside>
+
+      <main>
+        <h1 class="page-title" id="overview">AutoVerse — pura project portfolio</h1>
+        <p class="page-lead">Ek file mein har page, function, API, admin action aur SQL table. Demo: <code>npm run dev</code> phir localhost links.</p>
+        <p class="urdu">یہ دستاویز AutoVerse کی مکمل فہرست ہے — ویب سائٹ، ایڈمن، اور ڈیٹا بیس۔</p>
+        <div class="demo-bar">
+          <a class="btn-fill" href="http://localhost:3000" target="_blank">Live demo</a>
+          <a class="btn-outline" href="http://localhost:3000/cars" target="_blank">Gallery</a>
+          <a class="btn-outline" href="http://localhost:3000/admin/login" target="_blank">Admin</a>
+        </div>
+
+        <section class="block">
+          <h2>Project summary</h2>
+          <div class="grid-2">
+            <div class="mini-card"><strong>Business</strong><br />Karachi premium used cars — inventory, inspections, WhatsApp, leads.</div>
+            <div class="mini-card"><strong>Stack</strong><br />Next.js 16 · React 19 · TypeScript · Tailwind v4 · Framer Motion · PostgreSQL (<code>sql/</code>)</div>
+            <div class="mini-card"><strong>Runtime data</strong><br /><code>src/lib/mock-data.ts</code> (demo); SQL ready for production.</div>
+            <div class="mini-card"><strong>Photos</strong><br /><code>public/images/</code> — 77 files, 8 vehicles.</div>
+          </div>
+        </section>
+
+        <section class="block" id="routes">
+          <h2>All routes (pages)</h2>
+          <table class="data">
+            <thead><tr><th>Route</th><th>Area</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>/</code></td><td>Public</td><td>Home — hero, featured, stats, brands, FAQ, contact</td></tr>
+              <tr><td><code>/cars</code></td><td>Public</td><td>Gallery — filters, search, sort</td></tr>
+              <tr><td><code>/cars/[slug]</code></td><td>Public</td><td>Detail — gallery, specs, WhatsApp, inspection</td></tr>
+              <tr><td><code>/about</code></td><td>Public</td><td>About page</td></tr>
+              <tr><td><code>/contact</code></td><td>Public</td><td>Contact + map</td></tr>
+              <tr><td><code>/report/[token]</code></td><td>Public</td><td>Inspection report (noindex)</td></tr>
+              <tr><td><code>/admin/login</code></td><td>Admin</td><td>Staff login</td></tr>
+              <tr><td><code>/admin</code></td><td>Admin</td><td>Dashboard stats</td></tr>
+              <tr><td><code>/admin/cars</code></td><td>Admin</td><td>Inventory list</td></tr>
+              <tr><td><code>/admin/cars/new</code></td><td>Admin</td><td>Add car</td></tr>
+              <tr><td><code>/admin/cars/[id]/edit</code></td><td>Admin</td><td>Edit + photos</td></tr>
+              <tr><td><code>/admin/inspections</code></td><td>Admin</td><td>Bookings + CSV</td></tr>
+              <tr><td><code>/admin/inspections/[id]</code></td><td>Admin</td><td>Status, checklist, PDF</td></tr>
+              <tr><td><code>/admin/leads</code></td><td>Admin</td><td>All leads</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="block" id="inventory">
+          <h2>Sample inventory</h2>
+          <table class="data">
+            <thead><tr><th>Vehicle</th><th>Status</th><th>Photos</th></tr></thead>
+            <tbody>
+              <tr><td>Toyota Corolla Altis X Grande 1.8</td><td>Available</td><td>9</td></tr>
+              <tr><td>Kia Sportage AWD</td><td>Available</td><td>10</td></tr>
+              <tr><td>Hyundai Tucson HTRAC</td><td>Available</td><td>10</td></tr>
+              <tr><td>Mercedes W203</td><td>Available</td><td>8</td></tr>
+              <tr><td>BMW 120i</td><td>Available</td><td>10</td></tr>
+              <tr><td>MG HS</td><td>Available</td><td>10</td></tr>
+              <tr><td>Changan Oshan X7 300T</td><td>Available</td><td>10</td></tr>
+              <tr><td>Toyota Land Cruiser ZX V8</td><td>Available</td><td>10</td></tr>
+              <tr><td>Suzuki Alto VXL</td><td>Sold</td><td>—</td></tr>
+              <tr><td>Audi A4 Premium</td><td>Sold</td><td>—</td></tr>
+            </tbody>
+          </table>
+          <div class="gallery">
+            <img src="../public/images/kia-sportage/01.jpg" alt="" />
+            <img src="../public/images/hyundai-tucson/01.jpg" alt="" />
+            <img src="../public/images/toyota-land-cruiser-zx-v8/01.jpg" alt="" />
+          </div>
+        </section>
+
+        <p class="section-divider">Public website</p>
+
+        <section class="block" id="pub-home">
+          <h2><span class="tag tag-page">Page</span> Home <code>/</code></h2>
+          <ul class="fn-list">
+            <li><div class="fn-name">HeroSection</div><div class="fn-desc">Hero, tagline, CTAs, Kia Sportage photo (glass frame).</div></li>
+            <li><div class="fn-name">getFeaturedCars(6)</div><div class="fn-desc">Featured + available only → CarCard grid.</div></li>
+            <li><div class="fn-name">Why Choose + AnimatedCounter</div><div class="fn-desc">Trust cards + live stats from getCarStats().</div></li>
+            <li><div class="fn-name">InspectionSection</div><div class="fn-desc">3 packages, form at #inspection.</div></li>
+            <li><div class="fn-name">Brands links</div><div class="fn-desc">/cars?brand=Toyota|Kia|…</div></li>
+            <li><div class="fn-name">TestimonialsSlider</div><div class="fn-desc">Embla carousel autoplay.</div></li>
+            <li><div class="fn-name">FaqSection + JSON-LD</div><div class="fn-desc">FAQ accordion + schema.</div></li>
+            <li><div class="fn-name">ContactSection</div><div class="fn-desc">POST /api/contact, maps embed.</div></li>
+          </ul>
+        </section>
+
+        <section class="block" id="pub-cars">
+          <h2><span class="tag tag-page">Pages</span> Gallery &amp; car detail</h2>
+          <ul class="fn-list">
+            <li><div class="fn-name">getPublicCars(filters)</div><div class="fn-desc">Default available; “all” hides sold; brand, search, fuel, transmission, sort.</div></li>
+            <li><div class="fn-name">CarFilters</div><div class="fn-desc">URL query sync for shareable links.</div></li>
+            <li><div class="fn-name">CarGallery / CarCard</div><div class="fn-desc">3D tilt hover, StatusBadge, price, View Details.</div></li>
+            <li><div class="fn-name">CarPhoto</div><div class="fn-desc">/images/* full quality; hero, card, thumb, lightbox variants.</div></li>
+            <li><div class="fn-name">getCarBySlug / getRelatedCars</div><div class="fn-desc">Detail page + related same-brand cars.</div></li>
+            <li><div class="fn-name">CarDetailClient</div><div class="fn-desc">Gallery, lightbox, specs, features, description.</div></li>
+            <li><div class="fn-name">CTAs</div><div class="fn-desc">WhatsApp (carInquiryMessage), Call, InspectionFormModal, Share.</div></li>
+            <li><div class="fn-name">carMetadata + vehicleJsonLd</div><div class="fn-desc">SEO per car.</div></li>
+          </ul>
+        </section>
+
+        <section class="block" id="pub-forms">
+          <h2><span class="tag tag-api">API</span> Public forms</h2>
+          <ul class="fn-list">
+            <li><div class="fn-name">POST /api/contact</div><div class="fn-desc">Honeypot, MOCK_LEADS, optional Resend email.</div></li>
+            <li><div class="fn-name">POST /api/newsletter</div><div class="fn-desc">Footer subscribe.</div></li>
+            <li><div class="fn-name">POST /api/inspections</div><div class="fn-desc">createInspection + lead row.</div></li>
+            <li><div class="fn-name">InspectionFormModal</div><div class="fn-desc">React Hook Form + Zod, package pick, car prefill.</div></li>
+          </ul>
+        </section>
+
+        <section class="block" id="pub-ui">
+          <h2>Layout, UI &amp; SEO</h2>
+          <ul class="fn-list">
+            <li><div class="fn-name">SiteBackdrop</div><div class="fn-desc">Orbs, mesh, grid, noise — glass theme.</div></li>
+            <li><div class="fn-name">Navbar / Footer / WhatsAppFloat</div><div class="fn-desc">Glass nav, newsletter, floating WhatsApp.</div></li>
+            <li><div class="fn-name">BrandLogo</div><div class="fn-desc">Mark + AUT/VERSE wordmark.</div></li>
+            <li><div class="fn-name">globals.css</div><div class="fn-desc">glass-panel, glass-card, glass-nav, .field inputs.</div></li>
+            <li><div class="fn-name">sitemap.ts / robots.ts</div><div class="fn-desc">Dynamic sitemap, crawl rules.</div></li>
+            <li><div class="fn-name">localBusinessJsonLd</div><div class="fn-desc">Karachi NAP on layout.</div></li>
+            <li><div class="fn-name">Google Analytics</div><div class="fn-desc">Optional NEXT_PUBLIC_GA_ID.</div></li>
+          </ul>
+        </section>
+
+        <p class="section-divider">Admin panel</p>
+
+        <section class="block" id="adm-auth">
+          <h2><span class="tag tag-admin">Auth</span> Login &amp; security</h2>
+          <ul class="fn-list">
+            <li><div class="fn-name">POST /api/admin/login</div><div class="fn-desc">ADMIN_DEMO_* → signed HTTP-only cookie.</div></li>
+            <li><div class="fn-name">POST /api/admin/logout</div><div class="fn-desc">Clear session.</div></li>
+            <li><div class="fn-name">middleware.ts</div><div class="fn-desc">Protects /admin/* and /api/admin/*.</div></li>
+          </ul>
+        </section>
+
+        <section class="block" id="adm-cars">
+          <h2><span class="tag tag-admin">Cars</span> Inventory CRUD</h2>
+          <ul class="fn-list">
+            <li><div class="fn-name">upsertCar</div><div class="fn-desc">Create/update MOCK_CARS, slug, images, revalidate paths.</div></li>
+            <li><div class="fn-name">setCarStatus / deleteCar / markCarSoldAction</div><div class="fn-desc">available | reserved | sold.</div></li>
+            <li><div class="fn-name">CarForm</div><div class="fn-desc">Full spec fields, featured, status, images_json.</div></li>
+            <li><div class="fn-name">CarImageManager</div><div class="fn-desc">dnd-kit reorder, cover, upload, delete.</div></li>
+            <li><div class="fn-name">POST /api/admin/car-images</div><div class="fn-desc">Auth; max 8MB → public/uploads/cars/{id}/.</div></li>
+          </ul>
+        </section>
+
+        <section class="block" id="adm-insp">
+          <h2><span class="tag tag-admin">Inspections</span></h2>
+          <ul class="fn-list">
+            <li><div class="fn-name">InspectionsAdminTable</div><div class="fn-desc">Search, status tabs, counts, CSV export.</div></li>
+            <li><div class="fn-name">changeInspectionStatus</div><div class="fn-desc">pending → confirmed → in_progress → completed / cancelled.</div></li>
+            <li><div class="fn-name">InspectionChecklistForm + finalizeInspectionReport</div><div class="fn-desc">Scores, remarks → report token in MOCK_REPORTS.</div></li>
+            <li><div class="fn-name">createCarFromInspectionAction</div><div class="fn-desc">Draft listing from booking data.</div></li>
+          </ul>
+        </section>
+
+        <section class="block" id="adm-more">
+          <h2>Leads &amp; PDF</h2>
+          <ul class="fn-list">
+            <li><div class="fn-name">getLeads() / /admin/leads</div><div class="fn-desc">Contact, newsletter, inspection leads.</div></li>
+            <li><div class="fn-name">GET /api/reports/[token]/pdf</div><div class="fn-desc">React-PDF inspection download.</div></li>
+            <li><div class="fn-name">/report/[token]</div><div class="fn-desc">Customer report page + ReportActions.</div></li>
+          </ul>
+        </section>
+
+        <p class="section-divider">Technical</p>
+
+        <section class="block" id="tech-api">
+          <h2><span class="tag tag-api">API</span> All endpoints</h2>
+          <table class="data">
+            <thead><tr><th>Method</th><th>Path</th><th>Auth</th><th>Role</th></tr></thead>
+            <tbody>
+              <tr><td>POST</td><td>/api/contact</td><td>Public</td><td>Enquiry</td></tr>
+              <tr><td>POST</td><td>/api/newsletter</td><td>Public</td><td>Subscribe</td></tr>
+              <tr><td>POST</td><td>/api/inspections</td><td>Public</td><td>Book inspection</td></tr>
+              <tr><td>POST</td><td>/api/admin/login</td><td>Public</td><td>Admin session</td></tr>
+              <tr><td>POST</td><td>/api/admin/logout</td><td>Admin</td><td>Logout</td></tr>
+              <tr><td>POST</td><td>/api/admin/car-images</td><td>Admin</td><td>Upload photo</td></tr>
+              <tr><td>GET</td><td>/api/reports/[token]/pdf</td><td>Token</td><td>PDF file</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="block" id="tech-data">
+          <h2><span class="tag tag-data">Data</span> Functions</h2>
+          <h3>cars.ts</h3>
+          <ul class="fn-list">
+            <li>getPublicCars · getCars · getFeaturedCars · getCarBySlug · getCarById · getRelatedCars · getCarStats</li>
+          </ul>
+          <h3>inspections.ts</h3>
+          <ul class="fn-list">
+            <li>getInspections · getInspectionById · createInspection · updateInspectionStatus · completeInspectionWithReport · getReportByToken · getLeads</li>
+          </ul>
+          <h3>mock-data.ts</h3>
+          <ul class="fn-list">
+            <li>MOCK_CARS · MOCK_INSPECTIONS · MOCK_LEADS · MOCK_REPORTS · resetMockStores()</li>
+          </ul>
+          <h3>Helpers</h3>
+          <ul class="fn-list">
+            <li>buildCarSlug · formatPrice · formatKm · whatsappUrl · sendEmail · admin/auth session · car-image local detection</li>
+          </ul>
+        </section>
+
+        <section class="block" id="tech-sql">
+          <h2><span class="tag tag-data">SQL</span> PostgreSQL</h2>
+          <p><code>sql/autoverse.sql</code> — schema + seed: admin_users, cars, car_images, inspections, inspection_reports, leads, enums, triggers, 26 cars, image paths under <code>/images/…</code></p>
+          <pre class="cmd">createdb autoverse
+psql -U postgres -d autoverse -f sql/autoverse.sql</pre>
+        </section>
+
+        <section class="block" id="tech-env">
+          <h2>Environment &amp; commands</h2>
+          <table class="data">
+            <thead><tr><th>Variable</th><th>Use</th></tr></thead>
+            <tbody>
+              <tr><td>NEXT_PUBLIC_SITE_*</td><td>Brand, city, phone, WhatsApp, maps</td></tr>
+              <tr><td>ADMIN_DEMO_EMAIL / PASSWORD</td><td>Admin login</td></tr>
+              <tr><td>ADMIN_SESSION_SECRET</td><td>Cookie signing</td></tr>
+              <tr><td>DATABASE_URL</td><td>Postgres (future)</td></tr>
+              <tr><td>RESEND_*</td><td>Email</td></tr>
+              <tr><td>RECAPTCHA_*</td><td>Bot protection (optional)</td></tr>
+            </tbody>
+          </table>
+          <pre class="cmd">npm install
+cp .env.example .env.local
+npm run dev
+npm run build
+npm run start</pre>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
