@@ -23,9 +23,10 @@ const TESTIMONIALS = [
 ];
 
 export function TestimonialsSlider() {
-  const [emblaRef] = useEmblaCarousel({ loop: true }, [
-    Autoplay({ delay: 5000, stopOnInteraction: false }),
-  ]);
+  const [emblaRef] = useEmblaCarousel(
+    { loop: true, align: "start", dragFree: false },
+    [Autoplay({ delay: 5000, stopOnInteraction: false })]
+  );
 
   return (
     <section className="py-12 sm:py-16">
@@ -33,7 +34,10 @@ export function TestimonialsSlider() {
         <h2 className="section-title text-center text-2xl sm:text-3xl">
           Customer Testimonials
         </h2>
-        <div className="mt-6 overflow-hidden sm:mt-8" ref={emblaRef}>
+        <div
+          className="mt-6 touch-pan-y overflow-hidden sm:mt-8"
+          ref={emblaRef}
+        >
           <div className="flex">
             {TESTIMONIALS.map((t) => (
               <div key={t.name} className="min-w-0 flex-[0_0_100%] px-1 sm:px-2">
