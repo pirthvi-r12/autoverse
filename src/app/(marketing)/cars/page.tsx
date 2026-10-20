@@ -4,7 +4,7 @@ import { getPublicCars } from "@/lib/data/cars";
 import { CarFilters } from "@/components/cars/car-filters";
 import { CarGallery } from "@/components/cars/car-gallery";
 import { SITE } from "@/lib/constants";
-import type { CarFilters as Filters } from "@/types";
+import { parseCarFiltersFromSearchParams } from "@/lib/cars-search-params";
 
 export const metadata: Metadata = {
   title: `Used Cars for Sale in ${SITE.city}`,
@@ -14,29 +14,13 @@ export const metadata: Metadata = {
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
-function param(value: string | string[] | undefined) {
-  return typeof value === "string" ? value : undefined;
-}
-
 export default async function CarsPage({
   searchParams,
 }: {
   searchParams: Promise<SearchParams>;
 }) {
   const sp = await searchParams;
-  const filters: Filters = {
-    brand: param(sp.brand),
-    search: param(sp.search),
-    fuelType: param(sp.fuelType),
-    transmission: param(sp.transmission),
-    bodyType: param(sp.bodyType),
-    sort: (param(sp.sort) as Filters["sort"]) ?? "newest",
-    status: (param(sp.status) as Filters["status"]) ?? "available",
-    yearMin: param(sp.yearMin) ? Number(param(sp.yearMin)) : undefined,
-    yearMax: param(sp.yearMax) ? Number(param(sp.yearMax)) : undefined,
-    priceMin: param(sp.priceMin) ? Number(param(sp.priceMin)) : undefined,
-    priceMax: param(sp.priceMax) ? Number(param(sp.priceMax)) : undefined,
-  };
+  const filters = parseCarFiltersFromSearchParams(sp);
 
   const cars = await getPublicCars(filters);
 
@@ -54,7 +38,7 @@ export default async function CarsPage({
         </Suspense>
       </div>
       <div className="mt-6 sm:mt-8">
-        <CarGallery cars={cars} />
+        <CarGallery cars={cars} filters={filters} />
       </div>
     </div>
   );

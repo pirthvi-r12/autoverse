@@ -91,7 +91,7 @@ export async function HomeSections() {
           {BRANDS.map((brand) => (
             <Link
               key={brand}
-              href={`/cars?brand=${encodeURIComponent(brand)}`}
+              href={`/cars?brand=${encodeURIComponent(brand)}&status=all`}
               className="rounded-full border border-white/10 px-3 py-2 text-xs text-white/70 transition hover:border-accent hover:text-accent sm:px-4 sm:text-sm"
             >
               {brand}

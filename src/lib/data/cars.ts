@@ -87,11 +87,7 @@ export async function getPublicCars(filters?: CarFilters): Promise<Car[]> {
     return dbGetPublicCars(filters);
   }
   const status = filters?.status ?? "available";
-  const list = filterMock(MOCK_CARS, { ...filters, status });
-  if (status === "all") {
-    return list.filter((c) => c.status !== "sold");
-  }
-  return list;
+  return filterMock(MOCK_CARS, { ...filters, status });
 }
 
 export async function getCars(filters?: CarFilters): Promise<Car[]> {

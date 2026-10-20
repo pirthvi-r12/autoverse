@@ -103,11 +103,7 @@ export async function dbGetCars(filters?: CarFilters): Promise<Car[]> {
 
 export async function dbGetPublicCars(filters?: CarFilters): Promise<Car[]> {
   const status = filters?.status ?? "available";
-  const list = filterCars(await loadAllCars(), { ...filters, status });
-  if (status === "all") {
-    return list.filter((c) => c.status !== "sold");
-  }
-  return list;
+  return filterCars(await loadAllCars(), { ...filters, status });
 }
 
 export async function dbGetFeaturedCars(limit = 6): Promise<Car[]> {
