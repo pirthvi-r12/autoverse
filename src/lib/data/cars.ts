@@ -6,6 +6,7 @@ import {
   dbGetCars,
   dbGetFeaturedCars,
   dbGetPublicCars,
+  dbGetSoldShowcaseCars,
   dbSetCarStatus,
   dbUpsertCar,
 } from "@/lib/db/cars-repo";
@@ -108,6 +109,13 @@ export async function getFeaturedCars(limit = 6): Promise<Car[]> {
     0,
     limit
   );
+}
+
+export async function getSoldShowcaseCars(limit = 8): Promise<Car[]> {
+  if (isDatabaseConfigured()) {
+    return dbGetSoldShowcaseCars(limit);
+  }
+  return MOCK_CARS.filter((c) => c.status === "sold").slice(0, limit);
 }
 
 export async function getCarBySlug(slug: string): Promise<Car | null> {

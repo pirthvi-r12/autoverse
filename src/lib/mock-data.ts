@@ -119,6 +119,8 @@ export const MOCK_CARS: Car[] = [
     body_type: "Hatchback",
     registration_city: "Karachi",
     status: "sold",
+    customer_feedback:
+      "Perfect first car for the city — AutoVerse handled everything clearly.",
     features: ["ABS", "Airbags"],
     images: [
       {
@@ -294,6 +296,8 @@ export const MOCK_CARS: Car[] = [
     transmission: "Automatic",
     body_type: "Sedan",
     status: "sold",
+    customer_feedback:
+      "Premium sedan, fair price — inspection report matched the car exactly.",
     images: [
       {
         id: "img8",

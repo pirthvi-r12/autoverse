@@ -117,6 +117,23 @@ export async function dbGetFeaturedCars(limit = 6): Promise<Car[]> {
     .slice(0, limit);
 }
 
+/** Sold cars with photos for homepage “recently sold” showcase. */
+export async function dbGetSoldShowcaseCars(limit = 8): Promise<Car[]> {
+  const all = await loadAllCars();
+  return all
+    .filter((c) => c.status === "sold")
+    .sort((a, b) => {
+      const aHas = (a.images?.length ?? 0) > 0 ? 1 : 0;
+      const bHas = (b.images?.length ?? 0) > 0 ? 1 : 0;
+      if (bHas !== aHas) return bHas - aHas;
+      return (
+        new Date(b.updated_at ?? b.created_at).getTime() -
+        new Date(a.updated_at ?? a.created_at).getTime()
+      );
+    })
+    .slice(0, limit);
+}
+
 export async function dbGetCarBySlug(slug: string): Promise<Car | null> {
   const pool = getPool();
   const [rows] = await pool.query<RowDataPacket[]>(
@@ -163,8 +180,8 @@ export async function dbUpsertCar(record: Car): Promise<void> {
       `INSERT INTO cars (
         id, slug, name, brand, model, year, price, mileage, fuel_type, transmission,
         engine_capacity, color, body_type, registration_city, owners, \`condition\`,
-        features, description, status, video_url, is_featured, created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        features, description, customer_feedback, status, video_url, is_featured, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON DUPLICATE KEY UPDATE
         slug = VALUES(slug),
         name = VALUES(name),
@@ -183,6 +200,7 @@ export async function dbUpsertCar(record: Car): Promise<void> {
         \`condition\` = VALUES(\`condition\`),
         features = VALUES(features),
         description = VALUES(description),
+        customer_feedback = VALUES(customer_feedback),
         status = VALUES(status),
         video_url = VALUES(video_url),
         is_featured = VALUES(is_featured)`,
@@ -205,6 +223,7 @@ export async function dbUpsertCar(record: Car): Promise<void> {
         record.condition ?? null,
         features,
         record.description ?? null,
+        record.customer_feedback ?? null,
         record.status,
         record.video_url ?? null,
         record.is_featured ? 1 : 0,

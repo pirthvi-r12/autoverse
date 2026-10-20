@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS cars (
   `condition` VARCHAR(80) NULL,
   features JSON NOT NULL,
   description TEXT NULL,
+  customer_feedback TEXT NULL,
   status ENUM('available', 'sold', 'reserved') NOT NULL DEFAULT 'available',
   video_url TEXT NULL,
   is_featured TINYINT(1) NOT NULL DEFAULT 0,
@@ -198,3 +199,8 @@ INSERT INTO car_images (id, car_id, url, alt_text, sort_order, is_cover) VALUES
   (UUID(), 'a1b2c3d4-0001-4000-8000-000000000025', '/images/nissan-note-e-power/01.jpg', 'Nissan Note e-Power', 0, 1),
   (UUID(), 'a1b2c3d4-0001-4000-8000-000000000026', '/images/toyota-corolla-grande/01.jpg', 'Toyota Corolla Grande', 0, 1),
   (UUID(), 'a1b2c3d4-0001-4000-8000-000000000027', '/images/lexus-rx450h/01.jpg', 'Lexus RX450h', 0, 1);
+
+UPDATE cars SET customer_feedback = 'Perfect first car for the city — AutoVerse handled everything clearly.'
+WHERE id = 'a1b2c3d4-0001-4000-8000-000000000003';
+UPDATE cars SET customer_feedback = 'Premium sedan, fair price — inspection report matched the car exactly.'
+WHERE id = 'a1b2c3d4-0001-4000-8000-000000000008';

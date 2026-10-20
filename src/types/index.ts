@@ -37,6 +37,8 @@ export interface Car {
   condition?: string | null;
   features: string[];
   description?: string | null;
+  /** Buyer quote shown on sold showcase (admin). */
+  customer_feedback?: string | null;
   status: CarStatus;
   video_url?: string | null;
   is_featured: boolean;

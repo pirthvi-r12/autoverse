@@ -5,6 +5,7 @@ import { CarCard } from "@/components/cars/car-card";
 import { BRANDS, INSPECTION_PACKAGES, SITE } from "@/lib/constants";
 import { AnimatedCounter } from "./animated-counter";
 import { InspectionSection } from "@/components/inspection/inspection-section";
+import { SoldShowcaseSection } from "./sold-showcase-section";
 import { TestimonialsSlider } from "./testimonials-slider";
 import { FaqSection } from "./faq-section";
 import { ContactSection } from "./contact-section";
@@ -94,6 +95,7 @@ export async function HomeSections() {
         </div>
       </section>
 
+      <SoldShowcaseSection />
       <TestimonialsSlider />
       <FaqSection />
       <ContactSection />

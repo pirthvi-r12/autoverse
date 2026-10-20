@@ -72,6 +72,8 @@ export function rowToCar(row: RowDataPacket, images: CarImage[]): Car {
     condition: row.condition != null ? String(row.condition) : null,
     features: parseJsonArray(row.features),
     description: row.description != null ? String(row.description) : null,
+    customer_feedback:
+      row.customer_feedback != null ? String(row.customer_feedback) : null,
     status: row.status as Car["status"],
     video_url: row.video_url != null ? String(row.video_url) : null,
     is_featured: Boolean(row.is_featured),

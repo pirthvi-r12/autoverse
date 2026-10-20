@@ -99,6 +99,14 @@ export function CarDetailClient({
             </ul>
           )}
           <p className="mt-6 text-white/70">{car.description}</p>
+          {car.status === "sold" && car.customer_feedback?.trim() && (
+            <blockquote className="mt-6 rounded-2xl border border-accent/20 bg-accent/5 p-4 text-sm text-white/85">
+              <p className="text-xs font-semibold uppercase tracking-wide text-accent">
+                Buyer feedback
+              </p>
+              <p className="mt-2">&ldquo;{car.customer_feedback.trim()}&rdquo;</p>
+            </blockquote>
+          )}
           <div className="mt-6 flex flex-wrap gap-3">
             <a
               href={whatsappUrl(carInquiryMessage(car))}

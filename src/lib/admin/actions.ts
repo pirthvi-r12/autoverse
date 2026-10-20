@@ -38,6 +38,7 @@ export async function upsertCar(input: {
   registration_city?: string;
   owners?: number;
   condition?: string;
+  customer_feedback?: string;
   images_json?: string;
 }) {
   const id = input.id ?? crypto.randomUUID();
@@ -72,6 +73,7 @@ export async function upsertCar(input: {
     condition: input.condition,
     status: input.status,
     description: input.description,
+    customer_feedback: input.customer_feedback?.trim() || null,
     features: input.features ?? [],
     is_featured: input.is_featured ?? false,
     created_at: prev?.created_at ?? new Date().toISOString(),
@@ -81,6 +83,7 @@ export async function upsertCar(input: {
   revalidatePath("/cars");
   revalidatePath(`/cars/${slug}`);
   revalidatePath("/admin/cars");
+  revalidatePath("/");
   return { ok: true, id };
 }
 

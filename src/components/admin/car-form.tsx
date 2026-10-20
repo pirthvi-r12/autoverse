@@ -47,6 +47,7 @@ export function CarForm({ car }: { car?: Car }) {
       condition: String(fd.get("condition") ?? "") || undefined,
       status: String(fd.get("status")) as CarStatus,
       description: String(fd.get("description") ?? ""),
+      customer_feedback: String(fd.get("customer_feedback") ?? "") || undefined,
       features: String(fd.get("features") ?? "")
         .split(",")
         .map((s) => s.trim())
@@ -180,6 +181,13 @@ export function CarForm({ car }: { car?: Car }) {
             defaultValue={car?.description ?? ""}
             rows={4}
             placeholder="Description for buyers"
+            className="field md:col-span-2"
+          />
+          <textarea
+            name="customer_feedback"
+            defaultValue={car?.customer_feedback ?? ""}
+            rows={3}
+            placeholder="Buyer feedback (shown on homepage when status is Sold) — e.g. Smooth deal, Ahmed — Karachi"
             className="field md:col-span-2"
           />
           <label className="flex items-center gap-2 text-sm md:col-span-2">
