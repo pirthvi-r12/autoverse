@@ -103,7 +103,7 @@ export interface InspectionReport {
 
 export interface Lead {
   id: string;
-  type: "contact" | "newsletter" | "inspection";
+  type: "contact" | "newsletter" | "inspection" | "ppf" | "ceramic_coating";
   full_name?: string | null;
   email?: string | null;
   phone?: string | null;

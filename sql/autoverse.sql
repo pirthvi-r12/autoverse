@@ -1,5 +1,19 @@
--- AutoVerse MySQL — schema + seed (single file)
--- mysql -u root -p < sql/autoverse.sql
+-- AutoVerse MySQL / TiDB — schema + seed (single file)
+-- Fresh DB:  mysql -u USER -p -h HOST -P 4000 < sql/autoverse.sql
+-- TiDB Cloud: set DB_SSL=true in .env.local; run full file OR bottom "TiDB migrate" block only.
+--
+-- Database-backed: cars, car_images, sold_deliveries, inspections, inspection_reports, leads,
+--   admin_users, service_* (PPF / ceramic registry).
+--
+-- /cars filters (brand, fuel, transmission, body, price, year, sort):
+--   App filters in memory today (src/lib/filter-cars.ts). These columns + indexes match that logic
+--   and keep seed values consistent (Petrol / Diesel / Hybrid, status available|sold|reserved).
+--   Public inventory excludes cars.status = 'sold'; "Sold" tab uses sold_deliveries (mirror: sold-deliveries.ts).
+--
+-- PPF / ceramic pages (content still in repo TS + public/images/*; DB = registry + packages for TiDB/admin):
+--   /ppf              → src/lib/ppf-services.ts
+--   /ceramic-coating  → src/lib/ceramic-coating.ts
+-- Bookings: 0335-7344294 · WhatsApp 923357344294 · D.H.A Phase 2 Ext, Karachi
 
 CREATE DATABASE IF NOT EXISTS autoverse CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE autoverse;
@@ -48,6 +62,11 @@ CREATE INDEX cars_brand_idx ON cars (brand);
 CREATE INDEX cars_status_idx ON cars (status);
 CREATE INDEX cars_year_idx ON cars (year);
 CREATE INDEX cars_price_idx ON cars (price);
+CREATE INDEX cars_fuel_type_idx ON cars (fuel_type);
+CREATE INDEX cars_body_type_idx ON cars (body_type);
+CREATE INDEX cars_transmission_idx ON cars (transmission);
+CREATE INDEX cars_status_created_idx ON cars (status, created_at);
+CREATE INDEX cars_brand_status_idx ON cars (brand, status);
 
 CREATE TABLE IF NOT EXISTS car_images (
   id CHAR(36) PRIMARY KEY,
@@ -112,7 +131,7 @@ CREATE INDEX inspection_reports_token_idx ON inspection_reports (public_token);
 
 CREATE TABLE IF NOT EXISTS leads (
   id CHAR(36) PRIMARY KEY,
-  type ENUM('contact', 'newsletter', 'inspection') NOT NULL,
+  type ENUM('contact', 'newsletter', 'inspection', 'ppf', 'ceramic_coating') NOT NULL,
   full_name VARCHAR(255) NULL,
   email VARCHAR(255) NULL,
   phone VARCHAR(40) NULL,
@@ -123,6 +142,84 @@ CREATE TABLE IF NOT EXISTS leads (
 
 CREATE INDEX leads_type_idx ON leads (type);
 CREATE INDEX leads_created_at_idx ON leads (created_at);
+
+-- Sold & delivered handovers — powers /cars filter status=sold (app reads sold-deliveries.ts today; keep in sync).
+CREATE TABLE IF NOT EXISTS sold_deliveries (
+  id VARCHAR(64) PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  model VARCHAR(120) NOT NULL,
+  year INT NOT NULL,
+  image_path TEXT NOT NULL,
+  feedback TEXT NOT NULL,
+  sort_order INT NOT NULL DEFAULT 0,
+  is_published TINYINT(1) NOT NULL DEFAULT 1,
+  created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  CHECK (year >= 1980 AND year <= 2100)
+);
+
+CREATE INDEX sold_deliveries_sort_idx ON sold_deliveries (sort_order);
+CREATE INDEX sold_deliveries_year_idx ON sold_deliveries (year);
+
+-- Registry of public marketing / detailing pages (metadata mirror; content lives in repo).
+CREATE TABLE IF NOT EXISTS service_pages (
+  slug VARCHAR(64) PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  public_path VARCHAR(120) NOT NULL,
+  config_path VARCHAR(255) NOT NULL COMMENT 'Source-of-truth TS module in repo',
+  images_dir VARCHAR(255) NULL COMMENT 'Under public/, e.g. images/ppf',
+  booking_phone VARCHAR(40) NOT NULL DEFAULT '0335-7344294',
+  booking_whatsapp VARCHAR(24) NOT NULL DEFAULT '923357344294',
+  booking_location VARCHAR(255) NOT NULL DEFAULT 'D.H.A Phase 2 Ext, Karachi',
+  updated_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)
+);
+
+-- PPF / ceramic film products (Miracle, Stealth, 3M).
+CREATE TABLE IF NOT EXISTS service_films (
+  id VARCHAR(64) PRIMARY KEY,
+  service_category ENUM('ppf', 'ceramic_coating') NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  short_name VARCHAR(255) NULL,
+  tagline VARCHAR(255) NULL,
+  substrate VARCHAR(120) NULL,
+  lifespan VARCHAR(80) NULL,
+  warranty VARCHAR(80) NULL,
+  warranty_covers TEXT NULL,
+  sort_order INT NOT NULL DEFAULT 0
+);
+
+CREATE INDEX service_films_category_idx ON service_films (service_category);
+
+-- Quote packages shown on /ppf and /ceramic-coating.
+CREATE TABLE IF NOT EXISTS service_packages (
+  id VARCHAR(64) PRIMARY KEY,
+  service_page_slug VARCHAR(64) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  price_label VARCHAR(120) NOT NULL,
+  tagline VARCHAR(255) NULL,
+  features JSON NOT NULL,
+  is_highlighted TINYINT(1) NOT NULL DEFAULT 0,
+  sort_order INT NOT NULL DEFAULT 0,
+  CONSTRAINT service_packages_page_fk FOREIGN KEY (service_page_slug) REFERENCES service_pages (slug) ON DELETE CASCADE
+);
+
+CREATE INDEX service_packages_page_idx ON service_packages (service_page_slug);
+
+-- Portfolio jobs (PPF / ceramic) — reference data; galleries ship in public/images/*.
+CREATE TABLE IF NOT EXISTS service_portfolio_jobs (
+  id CHAR(36) PRIMARY KEY,
+  service_category ENUM('ppf', 'ceramic_coating') NOT NULL,
+  slug VARCHAR(80) NOT NULL UNIQUE,
+  vehicle_name VARCHAR(255) NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  film_brand VARCHAR(120) NULL,
+  hero_image TEXT NULL,
+  sort_order INT NOT NULL DEFAULT 0,
+  is_published TINYINT(1) NOT NULL DEFAULT 1,
+  created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)
+);
+
+CREATE INDEX service_portfolio_category_idx ON service_portfolio_jobs (service_category);
+CREATE INDEX service_portfolio_sort_idx ON service_portfolio_jobs (sort_order);
 
 INSERT IGNORE INTO admin_users (id, email, password_hash, full_name, role)
 VALUES (
@@ -206,3 +303,242 @@ UPDATE cars SET customer_feedback = 'Perfect first car for the city — AutoVers
 WHERE id = 'a1b2c3d4-0001-4000-8000-000000000003';
 UPDATE cars SET customer_feedback = 'Premium sedan, fair price — inspection report matched the car exactly.'
 WHERE id = 'a1b2c3d4-0001-4000-8000-000000000008';
+
+-- Normalize filter facets (fuel / transmission / body) for any legacy rows you add in TiDB.
+UPDATE cars SET fuel_type = 'Petrol' WHERE LOWER(fuel_type) IN ('petrol', 'gasoline');
+UPDATE cars SET fuel_type = 'Diesel' WHERE LOWER(fuel_type) = 'diesel';
+UPDATE cars SET fuel_type = 'Hybrid' WHERE LOWER(fuel_type) IN ('hybrid', 'e-power', 'epower');
+UPDATE cars SET transmission = 'Automatic' WHERE LOWER(transmission) IN ('auto', 'automatic', 'cvt');
+UPDATE cars SET transmission = 'Manual' WHERE LOWER(transmission) = 'manual';
+
+-- ─── Sold tab / filter status=sold (showroom handovers) ─────────────────────
+
+INSERT IGNORE INTO sold_deliveries (id, name, model, year, image_path, feedback, sort_order) VALUES
+  ('pixis-2021', 'Toyota Pixis', 'Pixis', 2021, '/images/sold-deliveries/01-toyota-pixis-2021.jpg', 'Alhamdulillah — sold & delivered by AutoVerse.', 10),
+  ('mira-2012', 'Daihatsu Mira', 'Mira', 2012, '/images/sold-deliveries/02-daihatsu-mira-2012.jpg', 'Another happy delivery from AutoVerse.', 20),
+  ('alto-vxr-2021', 'Suzuki Alto VXR', 'Alto VXR', 2021, '/images/sold-deliveries/03-suzuki-alto-vxr-2021.jpg', 'Smooth handover — congrats to our customer!', 30),
+  ('altis-se-2022', 'Toyota Corolla Altis Special Edition', 'Corolla Altis Special Edition', 2022, '/images/sold-deliveries/04-toyota-altis-special-2022.jpg', 'Sold out — premium Altis delivered.', 40),
+  ('cultus-2021', 'Suzuki Cultus VXL AGS', 'Cultus VXL AGS', 2021, '/images/sold-deliveries/05-suzuki-cultus-vxl-2021.jpg', 'Delivered with AutoVerse ceremonial handover.', 50),
+  ('alto-ags-2019', 'Suzuki Alto AGS', 'Alto AGS', 2019, '/images/sold-deliveries/06-suzuki-alto-ags-2019.jpg', 'Trusted city car — sold by AutoVerse.', 60),
+  ('swift-glx-2025-promo', 'Suzuki Swift GLX', 'Swift GLX', 2025, '/images/sold-deliveries/07-suzuki-swift-glx-2025.jpg', 'Latest Swift GLX — sold out at AutoVerse.', 70),
+  ('yaris-2020', 'Toyota Yaris 1500 ATIV', 'Yaris 1500 ATIV', 2020, '/images/sold-deliveries/08-toyota-yaris-2020.jpg', 'Congrats on your new Yaris!', 80),
+  ('sportage-2020', 'Kia Sportage AWD', 'Sportage AWD', 2020, '/images/sold-deliveries/09-kia-sportage-awd-2020.jpg', 'AWD Sportage delivered — thank you for choosing AutoVerse.', 90),
+  ('swift-glx-2025-delivery', 'Suzuki Swift GLX', 'Swift GLX', 2025, '/images/sold-deliveries/10-suzuki-swift-glx-2025-delivery.jpg', 'Keys handed over — another Swift GLX sold.', 100),
+  ('swift-glx-2026', 'Suzuki Swift GLX', 'Swift GLX', 2026, '/images/sold-deliveries/11-suzuki-swift-glx-2026.jpg', 'Brand new Swift — delivered by AutoVerse.', 110),
+  ('yaris-2021', 'Toyota Yaris 1500', 'Yaris 1500', 2021, '/images/sold-deliveries/12-toyota-yaris-2021.jpg', 'Yaris 2021 sold out — happy customer.', 120),
+  ('corolla-grande-2021', 'Toyota Corolla Grande', 'Corolla Grande', 2021, '/images/sold-deliveries/13-toyota-corolla-grande-2021.jpg', 'Corolla Grande delivery — Alhamdulillah.', 130);
+
+-- ─── Detailing / PPF / ceramic (marketing registry) ─────────────────────────
+
+INSERT IGNORE INTO service_pages (slug, title, public_path, config_path, images_dir, booking_phone, booking_whatsapp, booking_location) VALUES
+  (
+    'ppf',
+    'PPF — Paint Protection Film',
+    '/ppf',
+    'src/lib/ppf-services.ts',
+    'images/ppf',
+    '0335-7344294',
+    '923357344294',
+    'D.H.A Phase 2 Ext, Karachi'
+  ),
+  (
+    'ceramic_coating',
+    'Ceramic coating — 3M & AutoVerse',
+    '/ceramic-coating',
+    'src/lib/ceramic-coating.ts',
+    'images/ceramic',
+    '0335-7344294',
+    '923357344294',
+    'D.H.A Phase 2 Ext, Karachi'
+  );
+
+INSERT IGNORE INTO service_films (
+  id, service_category, name, short_name, tagline, substrate, lifespan, warranty, warranty_covers, sort_order
+) VALUES
+  (
+    'miracle-ppf',
+    'ppf',
+    'Miracle Paint Protection Film (PPF)',
+    'Miracle Ceramic Coated PPF',
+    'Self-healing paint protection film',
+    'Substrate made in USA',
+    'Life up to 8 years',
+    '5 years warranty',
+    'Warranty against bubbling, cracking, yellowing, and delamination',
+    10
+  ),
+  (
+    'stealth-ppf',
+    'ppf',
+    'Stealth Paint Protection Film (PPF)',
+    'Stealth Ceramic Coated PPF',
+    'Ceramic coated stealth finish',
+    NULL,
+    NULL,
+    NULL,
+    'Warranty against bubbling, cracking, and delamination',
+    20
+  ),
+  (
+    '3m-ceramic',
+    'ceramic_coating',
+    '3M Ceramic Coating',
+    '3M Ceramic Coating',
+    'Paint correction + ceramic protection',
+    NULL,
+    NULL,
+    NULL,
+    'Protection from dust, water spotting, bird droppings, chemicals, UV, acid rain, oxidation',
+    10
+  );
+
+INSERT IGNORE INTO service_packages (
+  id, service_page_slug, name, price_label, tagline, features, is_highlighted, sort_order
+) VALUES
+  (
+    'partial-front',
+    'ppf',
+    'Partial Front',
+    'Quote on inspection',
+    'High-impact areas',
+    '["Partial bonnet & bumper","Headlamps / fog lamps (optional)","Ideal for budget-conscious owners"]',
+    0,
+    10
+  ),
+  (
+    'full-front',
+    'ppf',
+    'Full Front',
+    'Quote on inspection',
+    'Most popular package',
+    '["Full bonnet, bumper & fenders","Mirrors & headlamps","Precision cut & wrapped edges"]',
+    1,
+    20
+  ),
+  (
+    'full-body',
+    'ppf',
+    'Full Body',
+    'Quote on inspection',
+    'Maximum protection',
+    '["Complete exterior panels","Door cups, sills & high-wear zones","Includes paint correction & interior detail — see bundle on site"]',
+    0,
+    30
+  ),
+  (
+    'landcruiser-zx-package',
+    'ceramic_coating',
+    'AutoVerse ceramic coating package',
+    'Quote on inspection',
+    '3M correction + ceramic — SUV / luxury',
+    '["3M paint correction (rubbing compound)","Finishing compound","3M ceramic coating","Interior detailing","Seats removal","Carpet washing","Roof cleaning","Engine room detailing","Wash","Wax","Chrome rust removal"]',
+    1,
+    10
+  );
+
+INSERT IGNORE INTO service_portfolio_jobs (
+  id, service_category, slug, vehicle_name, title, film_brand, hero_image, sort_order
+) VALUES
+  (
+    'b0000000-0000-4000-8000-000000000001',
+    'ppf',
+    'corolla-cross',
+    'Toyota Corolla Cross',
+    'Corolla Cross — Miracle PPF',
+    'Miracle Ceramic Coated PPF',
+    '/images/ppf/corolla-cross-01-product-hero.jpg',
+    10
+  ),
+  (
+    'b0000000-0000-4000-8000-000000000002',
+    'ppf',
+    'kia-sportage',
+    'KIA Sportage',
+    'KIA Sportage — Miracle PPF',
+    'Miracle Ceramic Coated PPF',
+    '/images/ppf/kia-sportage-06-miracle-hero.jpg',
+    20
+  ),
+  (
+    'b0000000-0000-4000-8000-000000000003',
+    'ppf',
+    'audi-a4',
+    'Audi A4',
+    'Audi A4 — full body Miracle PPF',
+    'Miracle Paint Protection Film (PPF)',
+    '/images/ppf/audi-a4-04-rear-complete.jpg',
+    30
+  ),
+  (
+    'b0000000-0000-4000-8000-000000000004',
+    'ppf',
+    'mg-hs',
+    'MG HS',
+    'MG HS — Miracle PPF protection',
+    'Miracle Ceramic Coated PPF',
+    '/images/ppf/mg-hs-08-front-hero.jpg',
+    40
+  ),
+  (
+    'b0000000-0000-4000-8000-000000000005',
+    'ppf',
+    'fortuner-2021',
+    'Toyota Fortuner 2021',
+    'Fortuner 2021 — Stealth PPF',
+    'Stealth Ceramic Coated PPF',
+    '/images/ppf/fortuner-2021-01-stealth-hero.jpg',
+    50
+  ),
+  (
+    'b0000000-0000-4000-8000-000000000006',
+    'ppf',
+    'hilux-rocco-gr',
+    'Toyota Hilux Revo Rocco GR',
+    'Rocco GR — Miracle PPF',
+    'Miracle Ceramic Coated PPF',
+    '/images/ppf/hilux-rocco-gr-01-miracle-hero.jpg',
+    60
+  ),
+  (
+    'b0000000-0000-4000-8000-000000000007',
+    'ceramic_coating',
+    'landcruiser-zx',
+    'Toyota Land Cruiser ZX',
+    'Land Cruiser ZX — detailed by AutoVerse',
+    '3M Ceramic Coating',
+    '/images/ceramic/landcruiser-zx-08-studio-front.jpg',
+    10
+  );
+
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- TiDB / existing MySQL — run this block ONCE (skip if you ran full file on empty DB)
+-- Copy sections into TiDB SQL editor; ignore "already exists" on CREATE IF NOT EXISTS.
+-- ═══════════════════════════════════════════════════════════════════════════════
+--
+-- 1) Leads — PPF / ceramic inquiry types
+-- ALTER TABLE leads
+--   MODIFY type ENUM('contact', 'newsletter', 'inspection', 'ppf', 'ceramic_coating') NOT NULL;
+--
+-- 2) Filter indexes (cars listing) — skip any index that already exists
+-- CREATE INDEX cars_fuel_type_idx ON cars (fuel_type);
+-- CREATE INDEX cars_body_type_idx ON cars (body_type);
+-- CREATE INDEX cars_transmission_idx ON cars (transmission);
+-- CREATE INDEX cars_status_created_idx ON cars (status, created_at);
+-- CREATE INDEX cars_brand_status_idx ON cars (brand, status);
+--
+-- 3) Sold deliveries + service registry — use CREATE TABLE blocks from above, then:
+-- ALTER TABLE service_pages ADD COLUMN booking_whatsapp VARCHAR(24) NOT NULL DEFAULT '923357344294'
+--   AFTER booking_phone;
+-- UPDATE service_pages SET booking_whatsapp = '923357344294' WHERE booking_whatsapp IS NULL OR booking_whatsapp = '';
+--
+-- 4) Re-run INSERT IGNORE sections: sold_deliveries, service_pages, service_films,
+--    service_packages, service_portfolio_jobs (safe to repeat).
+--
+-- 5) Sold cars missing cover images (optional — matches scripts/fix-sold-car-images.mjs)
+-- INSERT INTO car_images (id, car_id, url, alt_text, sort_order, is_cover)
+-- SELECT UUID(), c.id, 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=810&q=80&auto=format', CONCAT(c.name, ' — cover'), 0, 1
+-- FROM cars c
+-- LEFT JOIN car_images i ON i.car_id = c.id
+-- WHERE c.status = 'sold'
+-- GROUP BY c.id, c.name
+-- HAVING COUNT(i.id) = 0;
