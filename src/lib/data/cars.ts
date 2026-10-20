@@ -9,6 +9,7 @@ import {
   dbUpsertCar,
 } from "@/lib/db/cars-repo";
 import { filterCars } from "@/lib/filter-cars";
+import { applyPublicCarFilters } from "@/lib/public-car-catalog";
 import {
   getSoldDeliveryCarBySlug,
   getSoldDeliveryInventory,
@@ -21,29 +22,17 @@ async function getActiveInventory(): Promise<Car[]> {
   return all.filter((c) => c.status !== "sold");
 }
 
+export async function getPublicCatalog() {
+  return {
+    inventory: await getActiveInventory(),
+    sold: getSoldDeliveryInventory(),
+  };
+}
+
 /** Public showroom: live inventory + sold handovers from Sold & Delivered section. */
 export async function getPublicCars(filters?: CarFilters): Promise<Car[]> {
-  const status = filters?.status ?? "available";
-  const soldShowcase = getSoldDeliveryInventory();
-  const soldFiltered = filterCars(soldShowcase, { ...filters, status: "sold" });
-
-  if (status === "sold") {
-    return soldFiltered;
-  }
-
-  const inventory = await getActiveInventory();
-
-  if (status === "available") {
-    return filterCars(inventory, { ...filters, status: "available" });
-  }
-
-  if (status === "reserved") {
-    return filterCars(inventory, { ...filters, status: "reserved" });
-  }
-
-  const active = filterCars(inventory, { ...filters, status: "all" });
-  const combined = [...active, ...soldFiltered];
-  return filterCars(combined, { ...filters, status: "all" });
+  const { inventory, sold } = await getPublicCatalog();
+  return applyPublicCarFilters(inventory, sold, filters);
 }
 
 export async function getCars(filters?: CarFilters): Promise<Car[]> {

@@ -24,13 +24,15 @@ export function parseCarFiltersFromSearchParams(
   const status =
     (statusRaw as CarFilters["status"] | undefined) ?? "available";
 
+  const sortRaw = get("sort");
+
   return {
     brand: get("brand")?.trim() || undefined,
     search: get("search")?.trim() || undefined,
     fuelType: get("fuelType")?.trim() || undefined,
     transmission: get("transmission")?.trim() || undefined,
     bodyType: get("bodyType")?.trim() || undefined,
-    sort: (get("sort") as CarFilters["sort"]) ?? "newest",
+    sort: (sortRaw as CarFilters["sort"]) ?? "newest",
     status,
     yearMin: get("yearMin") ? Number(get("yearMin")) : undefined,
     yearMax: get("yearMax") ? Number(get("yearMax")) : undefined,
@@ -42,25 +44,26 @@ export function parseCarFiltersFromSearchParams(
 export function carFiltersToSearchParams(filters: Partial<CarFilters>): string {
   const next = new URLSearchParams();
   const status = filters.status ?? "available";
+  const sort = filters.sort ?? "newest";
 
   if (filters.search) next.set("search", filters.search);
   if (filters.brand) next.set("brand", filters.brand);
   if (filters.fuelType) next.set("fuelType", filters.fuelType);
   if (filters.transmission) next.set("transmission", filters.transmission);
   if (filters.bodyType) next.set("bodyType", filters.bodyType);
-  if (filters.sort && filters.sort !== "newest") next.set("sort", filters.sort);
 
-  const hasFilters =
-    filters.brand ||
+  const touched =
     filters.search ||
+    filters.brand ||
     filters.fuelType ||
     filters.transmission ||
     filters.bodyType ||
     status !== "available" ||
-    (filters.sort && filters.sort !== "newest");
+    sort !== "newest";
 
-  if (hasFilters) {
+  if (touched) {
     next.set("status", status);
+    next.set("sort", sort);
   }
 
   if (filters.yearMin != null) next.set("yearMin", String(filters.yearMin));

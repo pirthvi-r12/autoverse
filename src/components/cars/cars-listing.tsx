@@ -1,53 +1,61 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import type { Car, CarFilters } from "@/types";
+import type { Car } from "@/types";
 import { parseCarFiltersFromSearchParams } from "@/lib/cars-search-params";
+import { applyPublicCarFilters } from "@/lib/public-car-catalog";
 import { CarGallery } from "./car-gallery";
 
-export function CarsListing({
-  initialCars,
-}: {
-  initialCars: Car[];
-  initialFilters?: CarFilters;
-}) {
-  const params = useSearchParams();
-  const filters = parseCarFiltersFromSearchParams(params);
-  const [cars, setCars] = useState(initialCars);
-  const [loading, setLoading] = useState(false);
+type Catalog = { inventory: Car[]; sold: Car[] };
 
+export function CarsListing({ initialCars }: { initialCars: Car[] }) {
+  const params = useSearchParams();
   const queryKey = params.toString();
+  const filters = parseCarFiltersFromSearchParams(params);
+
+  const [catalog, setCatalog] = useState<Catalog | null>(null);
+  const [catalogError, setCatalogError] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
-    const url = queryKey
-      ? `/api/public/cars?${queryKey}`
-      : "/api/public/cars";
-
-    fetch(url, { cache: "no-store" })
-      .then((res) => res.json())
-      .then((data: { cars: Car[] }) => {
-        if (!cancelled) setCars(data.cars ?? []);
+    fetch("/api/public/cars/catalog", { cache: "no-store" })
+      .then((res) => {
+        if (!res.ok) throw new Error("catalog failed");
+        return res.json() as Promise<Catalog>;
+      })
+      .then((data) => {
+        if (!cancelled) {
+          setCatalog(data);
+          setCatalogError(false);
+        }
       })
       .catch(() => {
-        if (!cancelled) setCars([]);
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) setCatalogError(true);
       });
-
     return () => {
       cancelled = true;
     };
-  }, [queryKey]);
+  }, []);
+
+  const cars = useMemo(() => {
+    const f = parseCarFiltersFromSearchParams(params);
+    if (catalog) {
+      return applyPublicCarFilters(catalog.inventory, catalog.sold, f);
+    }
+    return initialCars;
+  }, [catalog, initialCars, params, queryKey]);
 
   return (
     <div className="relative">
-      {loading && (
-        <p className="mb-3 text-sm text-accent" aria-live="polite">
-          Updating results…
+      {catalogError && (
+        <p className="mb-3 text-sm text-amber-300">
+          Could not refresh inventory. Showing last loaded results.
+        </p>
+      )}
+      {!catalog && (
+        <p className="mb-3 text-sm text-white/45" aria-live="polite">
+          Loading inventory…
         </p>
       )}
       <CarGallery cars={cars} filters={filters} />

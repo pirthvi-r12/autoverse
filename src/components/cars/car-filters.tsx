@@ -72,6 +72,11 @@ export function CarFilters() {
         apply({ search: undefined });
       },
     });
+  if (parsed.sort && parsed.sort !== "newest")
+    activeChips.push({
+      label: `Sort: ${parsed.sort.replace(/_/g, " ")}`,
+      clear: () => patch("sort", "newest"),
+    });
 
   const statusValue = parsed.status ?? "available";
 
