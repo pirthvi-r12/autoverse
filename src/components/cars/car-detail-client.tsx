@@ -34,107 +34,156 @@ export function CarDetailClient({
     }
   }
 
+  const specs: [string, string | number][] = [
+    ["Year", car.year],
+    ["Mileage", formatKm(car.mileage)],
+    ["Fuel", car.fuel_type],
+    ["Transmission", car.transmission],
+    ["Engine", car.engine_capacity ?? "—"],
+    ["Color", car.color ?? "—"],
+    ["Body", car.body_type],
+    ["City", car.registration_city ?? "—"],
+    ["Owners", car.owners ?? "—"],
+    ["Condition", car.condition ?? "—"],
+  ];
+
   return (
     <>
-      <div className="grid gap-8 lg:grid-cols-2">
-        <div>
+      <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
+        <div className="min-w-0">
           <button
             type="button"
-            className="w-full overflow-hidden rounded-2xl border border-white/10"
+            className="block w-full overflow-hidden rounded-2xl border border-white/10"
             onClick={() => setLightbox(true)}
           >
             {cover && (
-              <CarPhoto src={cover} alt={car.name} variant="hero" priority />
+              <CarPhoto src={cover} alt={car.name} variant="detail" priority />
             )}
           </button>
-          <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
-            {images.map((img, i) => (
-              <button
-                key={img.id}
-                type="button"
-                onClick={() => setActive(i)}
-                className={`relative h-[101px] w-[81px] shrink-0 overflow-hidden rounded-lg border bg-[#0a0e14] ${i === active ? "border-accent ring-1 ring-accent/40" : "border-white/10"}`}
-                aria-label={`Photo ${i + 1}`}
-              >
-                <CarPhoto src={img.url} alt="" variant="thumb" />
-              </button>
-            ))}
-          </div>
+          {images.length > 1 && (
+            <div className="scroll-touch mt-3 flex snap-x snap-mandatory gap-2.5 overflow-x-auto pb-2 pt-0.5">
+              {images.map((img, i) => (
+                <button
+                  key={img.id}
+                  type="button"
+                  onClick={() => setActive(i)}
+                  className={`relative h-[88px] w-[70px] shrink-0 snap-center overflow-hidden rounded-lg border bg-[#0a0e14] sm:h-[101px] sm:w-[81px] ${
+                    i === active
+                      ? "border-accent ring-2 ring-accent/35"
+                      : "border-white/15 opacity-90"
+                  }`}
+                  aria-label={`Photo ${i + 1}`}
+                  aria-current={i === active ? "true" : undefined}
+                >
+                  <CarPhoto src={img.url} alt="" variant="thumb" />
+                </button>
+              ))}
+            </div>
+          )}
           {car.video_url && (
-            <video controls className="mt-4 w-full rounded-xl" src={car.video_url} />
+            <video
+              controls
+              className="mt-4 w-full rounded-xl"
+              src={car.video_url}
+            />
           )}
         </div>
-        <div>
-          <div className="flex items-start justify-between gap-3">
-            <h1 className="text-3xl font-bold text-white">{car.name}</h1>
-            <StatusBadge status={car.status} />
+
+        <div className="min-w-0">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0">
+              <h1 className="text-2xl font-bold leading-tight text-white sm:text-3xl">
+                {car.name}
+              </h1>
+              <p className="mt-1.5 text-sm font-medium text-white/55">
+                {car.brand} {car.model} · {car.year}
+              </p>
+            </div>
+            <div className="shrink-0 self-start">
+              <StatusBadge status={car.status} />
+            </div>
           </div>
-          <p className="mt-2 text-3xl font-black text-accent">{formatPrice(car.price)}</p>
-          <dl className="mt-6 grid grid-cols-2 gap-3 text-sm">
-            {[
-              ["Year", car.year],
-              ["Mileage", formatKm(car.mileage)],
-              ["Fuel", car.fuel_type],
-              ["Transmission", car.transmission],
-              ["Engine", car.engine_capacity ?? "—"],
-              ["Color", car.color ?? "—"],
-              ["Body", car.body_type],
-              ["City", car.registration_city ?? "—"],
-              ["Owners", car.owners ?? "—"],
-              ["Condition", car.condition ?? "—"],
-            ].map(([k, v]) => (
-              <div key={k} className="rounded-xl bg-white/5 px-3 py-2">
-                <dt className="text-white/45">{k}</dt>
-                <dd className="font-medium text-white">{v}</dd>
+
+          <p className="mt-3 text-2xl font-black text-accent sm:text-3xl">
+            {formatPrice(car.price)}
+          </p>
+
+          <dl className="mt-5 grid grid-cols-2 gap-2.5 sm:mt-6 sm:gap-3">
+            {specs.map(([k, v]) => (
+              <div key={k} className="car-detail-spec">
+                <dt>{k}</dt>
+                <dd>{v}</dd>
               </div>
             ))}
           </dl>
+
           {car.features?.length > 0 && (
             <ul className="mt-4 flex flex-wrap gap-2">
               {car.features.map((f) => (
-                <li key={f} className="rounded-full bg-accent/10 px-3 py-1 text-xs text-accent">
+                <li
+                  key={f}
+                  className="rounded-full bg-accent/10 px-3 py-1 text-xs text-accent"
+                >
                   {f}
                 </li>
               ))}
             </ul>
           )}
-          <p className="mt-6 text-white/70">{car.description}</p>
+
+          {car.description?.trim() && (
+            <p className="mt-5 text-sm leading-relaxed text-white/70 sm:mt-6 sm:text-base">
+              {car.description}
+            </p>
+          )}
+
           {car.status === "sold" && car.customer_feedback?.trim() && (
-            <blockquote className="mt-6 rounded-2xl border border-accent/20 bg-accent/5 p-4 text-sm text-white/85">
+            <blockquote className="mt-5 rounded-2xl border border-accent/20 bg-accent/5 p-4 text-sm text-white/85">
               <p className="text-xs font-semibold uppercase tracking-wide text-accent">
                 Buyer feedback
               </p>
               <p className="mt-2">&ldquo;{car.customer_feedback.trim()}&rdquo;</p>
             </blockquote>
           )}
-          <div className="mt-6 flex flex-wrap gap-3">
+
+          <div className="mt-6 grid grid-cols-2 gap-2.5 sm:flex sm:flex-wrap sm:gap-3">
             <a
               href={whatsappUrl(carInquiryMessage(car))}
-              className="rounded-full bg-[#25D366] px-4 py-2 text-sm font-semibold text-white"
+              className="car-detail-cta col-span-2 bg-[#25D366] text-white sm:col-span-1"
             >
               WhatsApp Us
             </a>
-            <a href={`tel:${SITE.phone}`} className="inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-sm text-white">
-              <Phone size={16} /> Call Now
+            <a
+              href={`tel:${SITE.phone}`}
+              className="car-detail-cta border border-white/20 text-white"
+            >
+              <Phone size={16} aria-hidden />
+              Call Now
             </a>
             <button
               type="button"
-              onClick={() => setInspectOpen(true)}
-              className="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-black"
+              onClick={share}
+              className="car-detail-cta border border-white/20 text-white"
             >
-              Book Inspection for this Car
+              <Share2 size={16} aria-hidden />
+              Share
             </button>
-            <button type="button" onClick={share} className="inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-sm text-white">
-              <Share2 size={16} /> Share
+            <button
+              type="button"
+              onClick={() => setInspectOpen(true)}
+              className="car-detail-cta col-span-2 bg-accent text-black sm:col-span-1"
+            >
+              <span className="sm:hidden">Book inspection</span>
+              <span className="hidden sm:inline">Book Inspection for this Car</span>
             </button>
           </div>
         </div>
       </div>
 
       {related.length > 0 && (
-        <section className="mt-16">
-          <h2 className="text-2xl font-bold text-white">Related Cars</h2>
-          <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <section className="mt-12 border-t border-white/10 pt-10 sm:mt-16">
+          <h2 className="text-xl font-bold text-white sm:text-2xl">Related Cars</h2>
+          <p className="mt-1 text-sm text-white/50">More from {car.brand}</p>
+          <div className="mt-5 grid grid-cols-1 gap-5 min-[480px]:grid-cols-2 sm:gap-6 lg:grid-cols-4">
             {related.map((c) => (
               <CarCard key={c.id} car={c} />
             ))}
@@ -146,6 +195,8 @@ export function CarDetailClient({
         <div
           className="fixed inset-0 z-[70] flex items-center justify-center bg-black/90 p-4"
           onClick={() => setLightbox(false)}
+          role="dialog"
+          aria-modal="true"
         >
           <CarPhoto src={cover} alt={car.name} variant="lightbox" />
         </div>

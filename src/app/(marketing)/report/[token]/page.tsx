@@ -29,12 +29,12 @@ export default async function PublicReportPage({
   const pdfUrl = `/api/reports/${token}/pdf`;
 
   return (
-    <div className="mx-auto max-w-3xl px-4 pb-20 pt-28 lg:px-6">
-      <div className="glass-panel rounded-2xl p-8">
+    <div className="page-shell-narrow">
+      <div className="glass-panel rounded-2xl p-5 sm:p-8">
         <p className="text-sm font-semibold uppercase tracking-widest text-accent">
           {SITE.name} Inspection Report
         </p>
-        <h1 className="mt-2 text-3xl font-bold text-white">
+        <h1 className="mt-2 text-2xl font-bold leading-tight text-white sm:text-3xl">
           {inspection?.car_brand} {inspection?.car_model}{" "}
           {inspection?.car_year}
         </h1>
@@ -47,12 +47,12 @@ export default async function PublicReportPage({
           {Object.entries(report.checklist ?? {}).map(([key, val]) => (
             <div
               key={key}
-              className="flex items-start justify-between gap-4 rounded-xl bg-white/5 px-4 py-3 text-sm"
+              className="flex flex-col gap-1 rounded-xl bg-white/5 px-4 py-3 text-sm sm:flex-row sm:items-start sm:justify-between sm:gap-4"
             >
               <span className="capitalize text-white/70">
                 {key.replace(/_/g, " ")}
               </span>
-              <span className="text-right text-white">
+              <span className="font-medium text-white sm:text-right">
                 {val.score}/10
                 {val.notes ? ` — ${val.notes}` : ""}
               </span>
@@ -64,21 +64,24 @@ export default async function PublicReportPage({
           <p className="mt-6 text-white/75">{report.inspector_remarks}</p>
         )}
 
-        <div className="mt-8 flex flex-wrap gap-3">
+        <div className="mt-8 grid gap-2.5 sm:flex sm:flex-wrap sm:gap-3">
           <a
             href={pdfUrl}
-            className="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-black"
+            className="btn-touch w-full rounded-full bg-accent text-black sm:w-auto"
           >
             Download PDF
           </a>
           <button
             type="button"
-            className="rounded-full border border-white/20 px-4 py-2 text-sm text-white"
+            className="btn-touch w-full rounded-full border border-white/20 text-white sm:w-auto"
             data-copy={reportUrl}
           >
-            Copy link (use share buttons in admin)
+            Copy report link
           </button>
-          <Link href="/" className="text-sm text-accent">
+          <Link
+            href="/"
+            className="btn-touch w-full rounded-full border border-white/10 text-accent sm:w-auto sm:border-transparent"
+          >
             Back to {SITE.name}
           </Link>
         </div>

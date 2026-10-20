@@ -8,7 +8,7 @@ import {
   isLocalCarPhoto,
 } from "@/lib/car-image";
 
-type Variant = "card" | "hero" | "thumb" | "lightbox";
+type Variant = "card" | "hero" | "detail" | "thumb" | "lightbox";
 
 const aspectClass = "aspect-[810/1013]";
 
@@ -63,13 +63,17 @@ export function CarPhoto({
   const sizes =
     variant === "card"
       ? "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-      : "(max-width: 1024px) 100vw, 50vw";
+      : variant === "detail"
+        ? "100vw"
+        : "(max-width: 1024px) 100vw, 50vw";
 
   return (
     <div
       className={cn(
         "relative w-full overflow-hidden bg-[#0a0e14]",
-        aspectClass,
+        variant === "detail"
+          ? "aspect-[4/5] max-h-[min(58vh,520px)] sm:aspect-[810/1013] sm:max-h-none"
+          : aspectClass,
         variant === "card" && "rounded-none",
         className
       )}

@@ -28,7 +28,7 @@ export default async function CarDetailPage({
   const related = await getRelatedCars(car);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 pb-20 pt-28 lg:px-6">
+    <div className="page-shell">
       <JsonLd data={vehicleJsonLd(car)} />
       <JsonLd
         data={breadcrumbJsonLd([
@@ -37,15 +37,19 @@ export default async function CarDetailPage({
           { name: car.name, href: `/cars/${car.slug}` },
         ])}
       />
-      <nav className="mb-6 text-sm text-white/50">
+      <nav
+        className="mb-4 line-clamp-2 text-xs text-white/50 sm:mb-6 sm:text-sm"
+        aria-label="Breadcrumb"
+      >
         <Link href="/" className="hover:text-accent">
           Home
-        </Link>{" "}
-        /{" "}
+        </Link>
+        <span className="mx-1">/</span>
         <Link href="/cars" className="hover:text-accent">
           Cars
-        </Link>{" "}
-        / <span className="text-white/80">{car.name}</span>
+        </Link>
+        <span className="mx-1">/</span>
+        <span className="text-white/80">{car.name}</span>
       </nav>
       <CarDetailClient car={car} related={related} />
     </div>

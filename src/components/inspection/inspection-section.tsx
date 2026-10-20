@@ -18,31 +18,31 @@ export function InspectionSection({
   const [open, setOpen] = useState(false);
 
   return (
-    <section id="inspection" className="mx-auto max-w-7xl px-4 py-16 lg:px-6">
+    <section id="inspection" className="section-block">
       <div className="mx-auto max-w-2xl text-center">
-        <h2 className="text-3xl font-bold text-white">Car Inspection Service</h2>
-        <p className="mt-3 text-white/60">
+        <h2 className="section-title text-2xl sm:text-3xl">Car Inspection Service</h2>
+        <p className="section-lead">
           Buy with confidence. Choose a package or book instantly on WhatsApp.
         </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-3">
+        <div className="mt-5 grid grid-cols-1 gap-2.5 sm:mt-6 sm:flex sm:flex-wrap sm:justify-center sm:gap-3">
           <a
             href={whatsappUrl(inspectionWhatsAppMessage({}))}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-full bg-[#25D366] px-5 py-2.5 text-sm font-semibold text-white"
+            className="btn-touch rounded-full bg-[#25D366] text-white sm:w-auto"
           >
             Book on WhatsApp
           </a>
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="rounded-full border border-white/20 px-5 py-2.5 text-sm font-semibold text-white hover:border-accent"
+            className="btn-touch rounded-full border border-white/20 text-white hover:border-accent sm:w-auto"
           >
             Fill Inspection Form
           </button>
         </div>
       </div>
-      <div className="mt-10 grid gap-6 md:grid-cols-3">
+      <div className="mt-8 grid grid-cols-1 gap-5 sm:mt-10 sm:gap-6 md:grid-cols-3">
         {packages.map((pkg) => (
           <article
             key={pkg.id}

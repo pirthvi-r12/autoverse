@@ -13,7 +13,7 @@ export default async function EditCarPage({
 
   return (
     <div>
-      <h1 className="mb-6 text-3xl font-bold">Edit Car</h1>
+      <h1 className="mb-6 text-2xl font-bold sm:text-3xl">Edit Car</h1>
       <CarForm car={car} />
     </div>
   );

@@ -23,7 +23,7 @@ export function Footer() {
 
   return (
     <footer className="glass-footer">
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 md:grid-cols-4 lg:px-6">
+      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 pb-[max(3rem,env(safe-area-inset-bottom))] sm:gap-10 sm:py-14 md:grid-cols-4 lg:px-6">
         <div className="md:col-span-2">
           <BrandLogo href="/" variant="full" />
           <p className="mt-3 max-w-md text-sm text-white/65">
@@ -61,7 +61,7 @@ export function Footer() {
             />
             <button
               type="submit"
-              className="w-full rounded-xl bg-accent py-2 text-sm font-semibold text-brand-ink"
+              className="btn-touch w-full rounded-xl bg-accent text-brand-ink"
             >
               Subscribe
             </button>

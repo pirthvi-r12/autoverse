@@ -41,19 +41,19 @@ export default async function CarsPage({
   const cars = await getPublicCars(filters);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 pb-20 pt-28 lg:px-6">
-      <h1 className="text-4xl font-bold text-white">
+    <div className="page-shell">
+      <h1 className="section-title">
         Car Gallery — Buy Used Cars in {SITE.city}
       </h1>
-      <p className="mt-2 max-w-2xl text-white/60">
+      <p className="section-lead max-w-2xl">
         Explore our showroom inventory with transparent pricing and detailed specs.
       </p>
-      <div className="mt-8">
+      <div className="mt-6 sm:mt-8">
         <Suspense fallback={<div className="h-24 animate-pulse rounded-2xl bg-white/5" />}>
           <CarFilters />
         </Suspense>
       </div>
-      <div className="mt-8">
+      <div className="mt-6 sm:mt-8">
         <CarGallery cars={cars} />
       </div>
     </div>

@@ -18,29 +18,32 @@ export async function HomeSections() {
 
   return (
     <>
-      <section className="mx-auto max-w-7xl px-4 py-16 lg:px-6">
-        <div className="mb-8 flex items-end justify-between gap-4">
+      <section className="section-block">
+        <div className="mb-6 flex flex-col gap-3 sm:mb-8 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
           <div>
-            <h2 className="text-3xl font-bold text-white">Featured Cars</h2>
-            <p className="mt-2 text-white/60">Hand-picked inventory ready to drive.</p>
+            <h2 className="section-title text-2xl sm:text-3xl">Featured Cars</h2>
+            <p className="section-lead">Hand-picked inventory ready to drive.</p>
           </div>
-          <Link href="/cars" className="text-sm font-semibold text-accent">
+          <Link
+            href="/cars"
+            className="btn-touch w-fit rounded-full border border-white/15 px-4 text-accent sm:border-transparent sm:px-0"
+          >
             View all →
           </Link>
         </div>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-5 min-[480px]:grid-cols-2 sm:gap-6 lg:grid-cols-3">
           {featured.map((car) => (
             <CarCard key={car.id} car={car} />
           ))}
         </div>
       </section>
 
-      <section className="border-y border-white/10 py-16">
+      <section className="border-y border-white/10 py-12 sm:py-16">
         <div className="mx-auto max-w-7xl px-4 lg:px-6">
-          <h2 className="text-center text-3xl font-bold text-white">
+          <h2 className="section-title text-center text-2xl sm:text-3xl">
             Why Choose {SITE.name}
           </h2>
-          <div className="mt-10 grid gap-6 md:grid-cols-4">
+          <div className="mt-8 grid grid-cols-1 gap-4 min-[480px]:grid-cols-2 sm:mt-10 sm:gap-6 md:grid-cols-4">
             {[
               { icon: Shield, title: "Inspected Cars", desc: "150-point checks" },
               { icon: Gauge, title: "Transparent Pricing", desc: "No hidden fees" },
@@ -57,7 +60,7 @@ export async function HomeSections() {
               </div>
             ))}
           </div>
-          <div className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-4">
+          <div className="mt-10 grid grid-cols-2 gap-3 sm:mt-12 sm:gap-4 md:grid-cols-4">
             {[
               { label: "Cars in stock", value: stats.total },
               { label: "Available now", value: stats.available },
@@ -66,9 +69,9 @@ export async function HomeSections() {
             ].map((item) => (
               <div
                 key={item.label}
-                className="glass-stat rounded-2xl p-5 text-center"
+                className="glass-stat rounded-2xl p-4 text-center sm:p-5"
               >
-                <p className="text-3xl font-black text-accent">
+                <p className="text-2xl font-black text-accent sm:text-3xl">
                   <AnimatedCounter value={item.value} suffix={item.suffix} />
                 </p>
                 <p className="mt-1 text-sm text-white/60">{item.label}</p>
@@ -80,14 +83,16 @@ export async function HomeSections() {
 
       <InspectionSection packages={INSPECTION_PACKAGES} />
 
-      <section className="mx-auto max-w-7xl px-4 py-16 lg:px-6">
-        <h2 className="text-center text-3xl font-bold text-white">Brands We Deal In</h2>
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+      <section className="section-block">
+        <h2 className="section-title text-center text-2xl sm:text-3xl">
+          Brands We Deal In
+        </h2>
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-2 sm:mt-8 sm:gap-3">
           {BRANDS.map((brand) => (
             <Link
               key={brand}
               href={`/cars?brand=${encodeURIComponent(brand)}`}
-              className="rounded-full border border-white/10 px-4 py-2 text-sm text-white/70 transition hover:border-accent hover:text-accent"
+              className="rounded-full border border-white/10 px-3 py-2 text-xs text-white/70 transition hover:border-accent hover:text-accent sm:px-4 sm:text-sm"
             >
               {brand}
             </Link>

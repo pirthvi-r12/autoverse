@@ -52,11 +52,11 @@ export function BrandLogo({
               className="flex items-center gap-1 sm:gap-1.5"
               aria-label={BRAND.name}
             >
-              <span className="text-base font-extrabold uppercase tracking-[0.2em] text-white sm:text-lg">
+              <span className="text-sm font-extrabold uppercase tracking-[0.18em] text-white sm:text-lg sm:tracking-[0.2em]">
                 AUT
               </span>
               {wheelMark("inline")}
-              <span className="text-base font-extrabold uppercase tracking-[0.2em] text-white sm:text-lg">
+              <span className="text-sm font-extrabold uppercase tracking-[0.18em] text-white sm:text-lg sm:tracking-[0.2em]">
                 VERSE
               </span>
             </div>

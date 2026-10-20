@@ -21,6 +21,17 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
   return (
     <header
       className={cn(
@@ -30,7 +41,7 @@ export function Navbar() {
           : "glass-nav-top"
       )}
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 lg:px-6">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:py-4 lg:px-6">
         <BrandLogo priority href="/" variant="mark" showWordmark />
 
         <nav className="hidden items-center gap-8 md:flex">
@@ -56,8 +67,9 @@ export function Navbar() {
 
         <button
           type="button"
-          className="rounded-lg p-2 text-white md:hidden"
-          aria-label="Toggle menu"
+          className="-mr-1 flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-white md:hidden"
+          aria-expanded={open}
+          aria-label={open ? "Close menu" : "Open menu"}
           onClick={() => setOpen((v) => !v)}
         >
           {open ? <X size={22} /> : <Menu size={22} />}
@@ -65,14 +77,19 @@ export function Navbar() {
       </div>
 
       {open && (
-        <div className="glass-nav glass-nav-solid border-t border-white/10 px-4 py-4 md:hidden">
-          <nav className="flex flex-col gap-3">
+        <div className="fixed inset-x-0 top-[calc(3.25rem+env(safe-area-inset-top,0px))] bottom-0 z-40 overflow-y-auto border-t border-white/10 bg-[#041820]/98 px-4 py-5 backdrop-blur-xl md:hidden">
+          <nav className="flex flex-col gap-1">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setOpen(false)}
-                className="rounded-lg px-3 py-2 text-white/80 hover:bg-white/5"
+                className={cn(
+                  "rounded-xl px-4 py-3.5 text-base font-medium",
+                  pathname === link.href || pathname.startsWith(link.href + "/")
+                    ? "bg-accent/15 text-accent"
+                    : "text-white/85 active:bg-white/5"
+                )}
               >
                 {link.label}
               </Link>
@@ -80,7 +97,7 @@ export function Navbar() {
             <Link
               href="/cars"
               onClick={() => setOpen(false)}
-              className="rounded-full bg-accent px-4 py-2 text-center font-semibold text-brand-ink"
+              className="btn-touch mt-3 rounded-full bg-accent text-center font-bold text-brand-ink"
             >
               Browse Cars
             </Link>

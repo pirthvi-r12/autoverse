@@ -39,7 +39,7 @@ export function CarCard({ car }: { car: Car }) {
       onMouseMove={onMove}
       onMouseLeave={onLeave}
       className={cn(
-        "glass-card group relative rounded-2xl",
+        "glass-card group relative rounded-2xl max-md:!transform-none",
         car.status === "sold" && "opacity-90"
       )}
     >
@@ -62,15 +62,20 @@ export function CarCard({ car }: { car: Car }) {
           <StatusBadge status={car.status} />
         </div>
       </div>
-      <div className="space-y-2 p-4">
-        <h3 className="text-lg font-semibold text-white">{car.name}</h3>
+      <div className="space-y-1.5 p-4">
+        <h3 className="text-base font-semibold leading-snug text-white sm:text-lg">
+          {car.name}
+        </h3>
+        <p className="text-xs font-medium text-accent/90 sm:text-sm">
+          {car.brand} {car.model}
+        </p>
         <p className="text-sm text-white/55">
           {car.year} · {formatKm(car.mileage)} · {car.transmission}
         </p>
         <p className="text-xl font-bold text-accent">{formatPrice(car.price)}</p>
         <Link
           href={`/cars/${car.slug}`}
-          className="glass-cta inline-flex w-full items-center justify-center rounded-xl py-2 text-sm font-semibold text-white transition hover:border-accent/50 hover:bg-accent/20 hover:text-accent"
+          className="glass-cta btn-touch inline-flex w-full items-center justify-center rounded-xl text-white transition hover:border-accent/50 hover:bg-accent/20 hover:text-accent"
         >
           View Details
         </Link>

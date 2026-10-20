@@ -17,7 +17,7 @@ export default function MarketingLayout({
       <SiteBackdrop />
       <div className="relative z-10">
         <Navbar />
-        <main>{children}</main>
+        <main className="overflow-x-hidden">{children}</main>
         <Footer />
         <WhatsAppFloat />
       </div>

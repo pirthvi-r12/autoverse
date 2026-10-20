@@ -24,7 +24,7 @@ export default async function AdminDashboardPage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold">Dashboard</h1>
+      <h1 className="text-2xl font-bold sm:text-3xl">Dashboard</h1>
       <p className="mt-2 text-white/60">Overview of inventory and enquiries.</p>
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((c) => (

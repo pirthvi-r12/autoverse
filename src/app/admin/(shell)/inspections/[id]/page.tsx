@@ -44,8 +44,8 @@ export default async function AdminInspectionDetailPage({
         <Link href="/admin/inspections" className="text-sm text-accent">
           ← All inspection bookings
         </Link>
-        <h1 className="mt-2 text-3xl font-bold">{inspection.full_name}</h1>
-        <p className="text-white/60">
+        <h1 className="mt-2 text-2xl font-bold sm:text-3xl">{inspection.full_name}</h1>
+        <p className="text-sm text-white/60 sm:text-base">
           Request ID: <span className="font-mono text-xs">{inspection.id}</span> · Booked{" "}
           {new Date(inspection.created_at).toLocaleString()}
         </p>

@@ -9,8 +9,8 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <div className="pt-16">
-      <ContactSection />
+    <div className="page-shell">
+      <ContactSection embedded />
     </div>
   );
 }

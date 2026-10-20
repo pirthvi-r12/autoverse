@@ -8,9 +8,9 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="mx-auto max-w-3xl px-4 pb-20 pt-28 lg:px-6">
-      <h1 className="text-4xl font-bold text-white">About {SITE.name}</h1>
-      <p className="mt-6 text-lg leading-relaxed text-white/70">
+    <div className="page-shell-narrow">
+      <h1 className="section-title">About {SITE.name}</h1>
+      <p className="mt-5 text-base leading-relaxed text-white/70 sm:mt-6 sm:text-lg">
         {SITE.name} helps drivers in {SITE.city} buy and sell used cars with
         confidence. Our showroom features carefully selected vehicles, while our
         inspection team delivers transparent reports you can trust — whether

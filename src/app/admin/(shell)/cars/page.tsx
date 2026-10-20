@@ -8,11 +8,11 @@ export default async function AdminCarsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between gap-4">
-        <h1 className="text-3xl font-bold">Car Management</h1>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+        <h1 className="text-2xl font-bold sm:text-3xl">Car Management</h1>
         <Link
           href="/admin/cars/new"
-          className="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-black"
+          className="btn-touch w-full rounded-full bg-accent text-center text-black sm:w-auto"
         >
           Add car
         </Link>

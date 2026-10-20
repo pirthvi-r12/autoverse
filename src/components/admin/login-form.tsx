@@ -32,7 +32,7 @@ export function AdminLoginForm() {
     <div className="flex min-h-screen items-center justify-center bg-[#05080f] px-4">
       <form
         onSubmit={onSubmit}
-        className="w-full max-w-md rounded-2xl border border-white/10 bg-white/[0.03] p-8"
+        className="w-full max-w-md rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-8"
       >
         <h1 className="text-2xl font-bold text-white">Admin login</h1>
         <p className="mt-2 text-sm text-white/55">
@@ -63,7 +63,7 @@ export function AdminLoginForm() {
         </div>
         <button
           type="submit"
-          className="mt-4 w-full rounded-xl bg-accent py-3 font-semibold text-black"
+          className="btn-touch mt-4 w-full rounded-xl bg-accent text-black"
         >
           Sign in as admin
         </button>

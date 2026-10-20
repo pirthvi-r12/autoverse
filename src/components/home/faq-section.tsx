@@ -23,16 +23,16 @@ const FAQS = [
 
 export function FaqSection() {
   return (
-    <section className="mx-auto max-w-3xl px-4 py-16 lg:px-6">
+    <section className="mx-auto max-w-3xl px-4 py-12 sm:py-16 lg:px-6">
       <JsonLd data={faqJsonLd(FAQS.map((f) => ({ question: f.q, answer: f.a })))} />
-      <h2 className="text-center text-3xl font-bold text-white">FAQ</h2>
-      <div className="mt-8 space-y-3">
+      <h2 className="section-title text-center text-2xl sm:text-3xl">FAQ</h2>
+      <div className="mt-6 space-y-2.5 sm:mt-8 sm:space-y-3">
         {FAQS.map((item) => (
           <details
             key={item.q}
             className="glass-panel group rounded-xl p-4 open:border-accent/30"
           >
-            <summary className="cursor-pointer list-none font-semibold text-white marker:content-none">
+            <summary className="cursor-pointer list-none py-1 text-base font-semibold leading-snug text-white marker:content-none sm:text-[1.05rem]">
               {item.q}
             </summary>
             <p className="mt-3 text-sm leading-relaxed text-white/65">{item.a}</p>

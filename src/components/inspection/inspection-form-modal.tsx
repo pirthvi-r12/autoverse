@@ -73,11 +73,28 @@ export function InspectionFormModal({
   }
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/70 p-4 md:items-center">
-      <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-white/10 bg-[#0a1018] p-6 shadow-2xl">
-        <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-xl font-bold text-white">Book Inspection</h3>
-          <button type="button" onClick={onClose} aria-label="Close">
+    <div
+      className="fixed inset-0 z-[60] flex items-end justify-center bg-black/70 p-0 sm:p-4 md:items-center"
+      onClick={onClose}
+      role="presentation"
+    >
+      <div
+        className="max-h-[min(92dvh,900px)] w-full max-w-2xl overflow-y-auto rounded-t-3xl border border-white/10 bg-[#0a1018] p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-2xl sm:rounded-2xl sm:p-6 md:max-h-[90vh]"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="inspection-modal-title"
+      >
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <h3 id="inspection-modal-title" className="text-lg font-bold text-white sm:text-xl">
+            Book Inspection
+          </h3>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close"
+            className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg"
+          >
             <X className="text-white/70" />
           </button>
         </div>
@@ -116,7 +133,7 @@ export function InspectionFormModal({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="md:col-span-2 rounded-xl bg-accent py-3 font-semibold text-black disabled:opacity-60"
+              className="btn-touch md:col-span-2 w-full rounded-xl bg-accent text-black disabled:opacity-60"
             >
               {isSubmitting ? "Submitting..." : "Submit Inspection Request"}
             </button>

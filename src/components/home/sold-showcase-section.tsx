@@ -7,20 +7,23 @@ export function SoldShowcaseSection() {
   if (!SOLD_DELIVERIES.length) return null;
 
   return (
-    <section className="border-y border-white/10 bg-white/[0.02] py-16">
+    <section className="border-y border-white/10 bg-white/[0.02] py-12 sm:py-16">
       <div className="mx-auto max-w-7xl px-4 lg:px-6">
-        <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
+        <div className="mb-8 flex flex-col gap-3 sm:mb-10 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
           <div>
-            <h2 className="text-3xl font-bold text-white">Sold & Delivered</h2>
-            <p className="mt-2 max-w-xl text-white/60">
+            <h2 className="section-title text-2xl sm:text-3xl">Sold & Delivered</h2>
+            <p className="section-lead max-w-xl">
               Real AutoVerse handovers — each photo with car name and model.
             </p>
           </div>
-          <Link href="/cars?status=sold" className="text-sm font-semibold text-accent">
+          <Link
+            href="/cars?status=sold"
+            className="btn-touch w-fit rounded-full border border-white/15 px-4 text-sm font-semibold text-accent sm:border-transparent sm:px-0"
+          >
             Inventory sold →
           </Link>
         </div>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-5 min-[480px]:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
           {SOLD_DELIVERIES.map((item) => (
             <article
               key={item.id}
@@ -33,7 +36,7 @@ export function SoldShowcaseSection() {
                 </span>
               </div>
               <div className="space-y-2 border-t border-white/10 bg-black/20 p-4">
-                <h3 className="text-lg font-bold leading-snug text-white">
+                <h3 className="text-base font-bold leading-snug text-white sm:text-lg">
                   {item.name}
                 </h3>
                 <p className="text-sm font-semibold text-accent">

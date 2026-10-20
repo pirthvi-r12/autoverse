@@ -40,12 +40,12 @@ export default async function AdminLeadsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between gap-4">
-        <h1 className="text-3xl font-bold">Leads & Contacts</h1>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+        <h1 className="text-2xl font-bold sm:text-3xl">Leads & Contacts</h1>
         <a
           href={`data:text/csv;charset=utf-8,${encodeURIComponent(csv)}`}
           download="autoverse-leads.csv"
-          className="rounded-full border border-white/20 px-4 py-2 text-sm"
+          className="btn-touch w-full rounded-full border border-white/20 text-center text-sm sm:w-auto"
         >
           Export CSV
         </a>
