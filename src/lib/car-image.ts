@@ -6,7 +6,8 @@ export function isLocalCarPhoto(src: string) {
   return (
     src.startsWith("/images/") ||
     src.startsWith("/cars/") ||
-    src.startsWith("/uploads/")
+    src.startsWith("/uploads/") ||
+    src.includes("blob.vercel-storage.com")
   );
 }
 

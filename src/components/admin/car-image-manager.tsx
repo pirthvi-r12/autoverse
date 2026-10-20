@@ -70,8 +70,20 @@ export function CarImageManager({
         const fd = new FormData();
         fd.set("car_id", carId);
         fd.set("file", file);
-        const res = await fetch("/api/admin/car-images", { method: "POST", body: fd });
-        const data = (await res.json()) as { url?: string; error?: string };
+        const res = await fetch("/api/admin/car-images", {
+          method: "POST",
+          body: fd,
+          credentials: "include",
+        });
+        const raw = await res.text();
+        let data: { url?: string; error?: string } = {};
+        try {
+          data = raw ? (JSON.parse(raw) as { url?: string; error?: string }) : {};
+        } catch {
+          throw new Error(
+            raw?.slice(0, 200) || `Upload failed (HTTP ${res.status}). Check Vercel Blob storage.`
+          );
+        }
         if (!res.ok || !data.url) {
           throw new Error(data.error ?? "Upload failed");
         }
