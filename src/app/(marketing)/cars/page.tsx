@@ -2,9 +2,11 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { getPublicCars } from "@/lib/data/cars";
 import { CarFilters } from "@/components/cars/car-filters";
-import { CarGallery } from "@/components/cars/car-gallery";
+import { CarsListing } from "@/components/cars/cars-listing";
 import { SITE } from "@/lib/constants";
 import { parseCarFiltersFromSearchParams } from "@/lib/cars-search-params";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: `Used Cars for Sale in ${SITE.city}`,
@@ -38,7 +40,20 @@ export default async function CarsPage({
         </Suspense>
       </div>
       <div className="mt-6 sm:mt-8">
-        <CarGallery cars={cars} filters={filters} />
+        <Suspense
+          fallback={
+            <div className="grid grid-cols-1 gap-5 min-[480px]:grid-cols-2 lg:grid-cols-3">
+              {cars.slice(0, 6).map((car) => (
+                <div
+                  key={car.id}
+                  className="h-80 animate-pulse rounded-2xl bg-white/5"
+                />
+              ))}
+            </div>
+          }
+        >
+          <CarsListing initialCars={cars} />
+        </Suspense>
       </div>
     </div>
   );

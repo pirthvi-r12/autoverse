@@ -36,7 +36,9 @@ export function CarFilters() {
   function apply(partial: Parameters<typeof carFiltersToSearchParams>[0]) {
     const merged = { ...parsed, ...partial };
     const qs = carFiltersToSearchParams(merged);
-    router.push(qs ? `/cars?${qs}` : "/cars", { scroll: false });
+    const href = qs ? `/cars?${qs}` : "/cars";
+    router.push(href, { scroll: false });
+    router.refresh();
   }
 
   function patch(key: keyof typeof parsed, value: string) {
@@ -46,7 +48,30 @@ export function CarFilters() {
   function clearAll() {
     setSearchDraft("");
     router.push("/cars", { scroll: false });
+    router.refresh();
   }
+
+  const activeChips: { label: string; clear: () => void }[] = [];
+  if (parsed.brand)
+    activeChips.push({ label: `Brand: ${parsed.brand}`, clear: () => patch("brand", "") });
+  if (parsed.fuelType)
+    activeChips.push({
+      label: `Fuel: ${parsed.fuelType}`,
+      clear: () => patch("fuelType", ""),
+    });
+  if (parsed.status && parsed.status !== "available")
+    activeChips.push({
+      label: `Status: ${parsed.status}`,
+      clear: () => patch("status", "available"),
+    });
+  if (parsed.search)
+    activeChips.push({
+      label: `Search: ${parsed.search}`,
+      clear: () => {
+        setSearchDraft("");
+        apply({ search: undefined });
+      },
+    });
 
   const statusValue = parsed.status ?? "available";
 
@@ -193,6 +218,22 @@ export function CarFilters() {
           <option value="year_desc">Year: Newest</option>
         </select>
       </div>
+
+      {activeChips.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {activeChips.map((chip) => (
+            <button
+              key={chip.label}
+              type="button"
+              onClick={chip.clear}
+              className="inline-flex items-center gap-1.5 rounded-full border border-accent/35 bg-accent/10 px-3 py-1.5 text-xs font-medium text-accent"
+            >
+              {chip.label}
+              <X size={14} aria-hidden />
+            </button>
+          ))}
+        </div>
+      )}
 
       {(parsed.brand ||
         parsed.search ||

@@ -3,7 +3,9 @@ import type { CarFilters } from "@/types";
 type RawParams = Record<string, string | string[] | undefined>;
 
 function one(value: string | string[] | undefined): string | undefined {
-  return typeof value === "string" ? value : undefined;
+  if (typeof value === "string") return value;
+  if (Array.isArray(value) && typeof value[0] === "string") return value[0];
+  return undefined;
 }
 
 /** Shared URL → filter mapping for /cars (server + client). */

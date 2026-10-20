@@ -30,7 +30,13 @@ export function filterCars(cars: Car[], filters?: CarFilters): Car[] {
   if (filters.priceMax) list = list.filter((c) => c.price <= filters.priceMax!);
   if (filters.fuelType) {
     const fuel = filters.fuelType.toLowerCase();
-    list = list.filter((c) => c.fuel_type.toLowerCase() === fuel);
+    list = list.filter((c) => {
+      const ft = c.fuel_type.toLowerCase();
+      if (fuel === "hybrid") return ft.includes("hybrid");
+      if (fuel === "petrol") return ft.includes("petrol") && !ft.includes("diesel");
+      if (fuel === "diesel") return ft.includes("diesel");
+      return ft === fuel;
+    });
   }
   if (filters.transmission) {
     list = list.filter(
